@@ -19,35 +19,35 @@
 # Change the file extension to match the format (.xml for XML, etc...)
 #
 ###
-title: "TODO - Your title"
-abbrev: "TODO - Abbreviation"
-category: info
+title: "OAuth 2.0 Entity Profiles"
+abbrev: "OAuth Entity Profiles"
+category: std
 
-docname: draft-todo-yourname-protocol-latest
-submissiontype: IETF  # also: "independent", "editorial", "IAB", or "IRTF"
+docname: draft-mora-oauth-entity-profiles-latest
+submissiontype: IETF
 number:
 date:
 consensus: true
 v: 3
-area: AREA
-workgroup: WG Working Group
+area: Security
+workgroup: "Web Authorization Protocol"
 keyword:
- - next generation
- - unicorn
- - sparkling distributed ledger
-venue:
-  group: WG
-  type: Working Group
-  mail: WG@example.com
-  arch: https://example.com/WG
-  github: USER/REPO
-  latest: https://example.com/LATEST
+ - "OAuth"
+ - "Entity Profile"
+ - "Subject Profile"
+ - "Client Profile"
+ - "AI Agent"
 
 author:
  -
-    fullname: Your Name Here
-    organization: Your Organization Here
-    email: your.email@example.com
+    fullname: "Sreyantha Chary Mora"
+    organization: "Microsoft Corporation"
+    email: "sreyanthmora@microsoft.com"
+ -
+    fullname: "Pamela Dingle"
+    organization: "Microsoft Corporation"
+    email: "pamela.dingle@microsoft.com"
+
 
 normative:
 

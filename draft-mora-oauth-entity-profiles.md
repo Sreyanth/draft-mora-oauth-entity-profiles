@@ -82,7 +82,7 @@ This document uses the terms "User", "Resource Owner", "Client", "Authorization 
 - **Client Profile**:
 : A descriptor for the client software or application initiating the OAuth flow (e.g., web app, native app, AI agent etc.,).
 
-- **Subject Profile**: 
+- **Subject Profile**:
 : A descriptor for the entity represented by the token subject (e.g., user, AI agent, service account etc.,).
 
 # Motivation and Use Cases
@@ -202,7 +202,7 @@ Below is an example of how this metadata parameter might be included in the Auth
 
 ~~~json
 {
-  "entity_profiles_supported": 
+  "entity_profiles_supported":
   {
     "client": ["native_app", "web_app", "browser_app", "service", "ai_agent"],
     "subject": ["user", "device", "service", "ai_agent"]

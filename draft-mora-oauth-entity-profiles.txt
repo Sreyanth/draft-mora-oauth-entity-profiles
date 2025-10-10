@@ -2,34 +2,18 @@
 
 
 
-WG Working Group                                              Y. N. Here
-Internet-Draft                                    Your Organization Here
-Intended status: Informational                           10 October 2025
-Expires: 13 April 2026
+Web Authorization Protocol                                    S. C. Mora
+Internet-Draft                                                 P. Dingle
+Intended status: Standards Track                   Microsoft Corporation
+Expires: 13 April 2026                                   10 October 2025
 
 
-                           TODO - Your title
-                  draft-todo-yourname-protocol-latest
+                       OAuth 2.0 Entity Profiles
+                draft-mora-oauth-entity-profiles-latest
 
 Abstract
 
    TODO Abstract
-
-About This Document
-
-   This note is to be removed before publishing as an RFC.
-
-   The latest revision of this draft can be found at
-   https://example.com/LATEST.  Status information for this document may
-   be found at https://datatracker.ietf.org/doc/draft-todo-yourname-
-   protocol/.
-
-   Discussion of this document takes place on the WG Working Group
-   mailing list (mailto:WG@example.com), which is archived at
-   https://example.com/WG.
-
-   Source for this draft and an issue tracker can be found at
-   https://github.com/USER/REPO.
 
 Status of This Memo
 
@@ -70,7 +54,7 @@ Table of Contents
    4.  IANA Considerations
    5.  Normative References
    Acknowledgments
-   Author's Address
+   Authors' Addresses
 
 1.  Introduction
 
@@ -107,8 +91,13 @@ Acknowledgments
 
    TODO acknowledge.
 
-Author's Address
+Authors' Addresses
 
-   Your Name Here
-   Your Organization Here
-   Email: your.email@example.com
+   Sreyantha Chary Mora
+   Microsoft Corporation
+   Email: sreyanthmora@microsoft.com
+
+
+   Pamela Dingle
+   Microsoft Corporation
+   Email: pamela.dingle@microsoft.com

@@ -17,10 +17,10 @@ Abstract
    categorize OAuth 2.0 entities—clients and subjects—based on their
    operational context.  Entity Profiles provide structured descriptors
    for the client initiating the OAuth flow and the subject represented
-   in the issued tokens.  This document defines new JWT Claim names and
-   metadata parameters for use in access tokens, ID tokens, token
-   introspection responses, dynamic client registration, and
-   Authorization Server metadata.
+   in tokens.  This document defines new JWT Claim names and metadata
+   parameters for use in access tokens, ID tokens, token introspection
+   responses, dynamic client registration, and Authorization Server
+   metadata.
 
 About This Document
 
@@ -134,8 +134,15 @@ Table of Contents
      14.5.  Token Introspection Response Registration
        14.5.1.  client_profile
        14.5.2.  sub_profile
-   15. Normative References
+   15. References
+     15.1.  Normative References
+     15.2.  Informative References
    Appendix A.  Example Usage in Various Flows and Use Cases
+     A.1.  Common Profile Patterns
+       A.1.1.  Single Entity Acting as Both Client and Subject
+       A.1.2.  Delegation and Impersonation
+       A.1.3.  Multiple Profile Values
+       A.1.4.  Profile Mismatches to Avoid
    Appendix B.  Document History
      B.1.  draft-00
    Acknowledgments
@@ -308,9 +315,9 @@ Table of Contents
    AI agents can be deployed in various environments, such as backend
    services, cloud-based systems, edge devices, or within user-
    controlled platforms.  Depending on their operational context and
-   deployment, AI agents can be clients -- making outbound API calls,
-   initiating OAuth flows or subjects -- acting as the resource owner in
-   systems that authorize autonomous services.  Depending on their
+   deployment, AI agents can be clients -- making outbound API calls and
+   initiating OAuth flows; or, subjects -- acting as the resource owner
+   in systems that authorize autonomous services.  Depending on their
    ability to securely store credentials and maintain integrity, they
    may be classified as either confidential or public clients.  In some
    contexts, even well-secured AI agents may be treated as public
@@ -331,22 +338,21 @@ Table of Contents
 
 3.3.  Representation in Token Claims and Metadata
 
-   The value of an Entity Profile Claim or metadata parameter is
+   The value of an Entity Profile, whether appearing as a Claim in JWT
+   tokens or as a parameter in metadata or introspection responses, is
    expressed as a space-delimited, case-insensitive list of strings.
    Each string represents a classification of the entity (either a
    client or a subject) and MUST adhere to the syntax defined below.
 
-   Multiple values MAY be included in a single Claim if the entity fits
-   into more than one category.  The order of values is insignificant,
-   and there is no implicit hierarchy or relationship between the values
-   unless defined elsewhere.  When multiple Entity Profiles are present,
-   they aren't additive or cumulative; each value is interpreted
-   independently.  When including multiple values, the Entity Profile
-   combinations SHOULD be semantically meaningful and validated against
-   expected usage patterns.  Profiles with conflicting semantics (e.g.,
-   user and service) SHOULD be rejected unless a clear operational
-   justification exists (e.g., user and ai_agent to indicate a digital
-   employee).
+   Multiple values MAY be included if the entity fits into more than one
+   category.  The order of values is insignificant, and there is no
+   implicit hierarchy or relationship between the values.  When multiple
+   Entity Profiles are present, each value is interpreted independently.
+   When including multiple values, the Entity Profile combinations
+   SHOULD be semantically meaningful and validated against expected
+   usage patterns.  Conflicting profiles (e.g., user service) SHOULD be
+   avoided unless a clear operational justification exists (e.g., user
+   ai_agent to indicate an AI agent acting as a digital employee).
 
    entity-profile = profile-token * ( SP profile-token )
    profile-token = 1*( ALPHA / DIGIT / "-" / "_" / "." )
@@ -476,7 +482,7 @@ Table of Contents
    Authorization Servers MAY choose to ignore all or some of the
    provided Entity Profile values during registration, depending on
    their policies and other client metadata.  Authorization Servers MAY
-   also choose to assign additional Entity Profiles that aren't
+   also choose to assign additional Entity Profiles that are not
    requested by the client based on their policies.
 
    Below is an example of how this metadata parameter might be included
@@ -683,11 +689,11 @@ Table of Contents
 
    Resource Servers handling tokens with Entity Profile Claims:
 
-   *  SHOULD use sub_profile and client_profile values to inform access
+   *  SHOULD use sub_profile and client_profile Claims to inform access
       control decisions and apply appropriate policies.
 
    *  SHOULD apply conservative or default-deny policies when processing
-      unrecognized Entity Profile values, when Entity Profile values are
+      unrecognized Entity Profile Claims, when Entity Profile values are
       missing, or when the semantics of the Entity Profile are not
       known.
 
@@ -729,33 +735,36 @@ Table of Contents
    sub_profiles = set(token.get("sub_profile", "").split(" "))
 
    # Define applicable policies
-   policies = []
+   policies_to_apply = []
 
    if "service" in client_profiles:
        # Add service-specific policies
-       policies.append(apply_service_policy)
+       policies_to_apply.append(apply_service_policy)
 
    if "ai_agent" in sub_profiles:
        # Add AI agent-specific policies
-       policies.append(apply_ai_agent_policy)
+       policies_to_apply.append(apply_ai_agent_policy)
 
    if "user" in sub_profiles:
        # Add user-specific policies
-       policies.append(apply_user_policy)
+       policies_to_apply.append(apply_user_policy)
 
    # Evaluate combined policies (e.g., intersection of permissions or most restrictive)
-   final_decision = evaluate_combined_policies(policies, mode="most_restrictive")
+   final_decision = evaluate_combined_policies(policies_to_apply, mode="most_restrictive")
 
 11.  Delegation Considerations
 
-   Entity Profile attributes or Claims do not define or imply delegation
-   chains.  They serve to classify entities in an OAuth flow and to
-   provide advisory metadata for the consumers of these attributes with
-   additional context for better policy enforcement and decision making.
-   Future specifications may define delegation semantics independently.
+   Entity Profile Claims do not define or imply delegation
+   relationships.  They are intended solely to classify entities
+   participating in an OAuth flow and to provide additional information
+   that can assist relying parties in enforcing policies or making
+   authorization decisions.
 
-   Implementations MAY include Entity Profile Claims in delegated flows
-   to provide additional context of the delegators and delegates.
+   Implementations MAY include Entity Profile Claims in delegated
+   contexts to convey additional information about the delegator or
+   delegate.  For example, in a token exchange flow [RFC8693], the act
+   Claim could include a sub_profile value to indicate the profile of
+   the acting entity within the delegation chain.
 
 12.  Security Considerations
 
@@ -1108,7 +1117,9 @@ Table of Contents
 
    *  Specification Document: Section 7 of this document.
 
-15.  Normative References
+15.  References
+
+15.1.  Normative References
 
    [OIDC]     "OpenID Connect Core 1.0", December 2023,
               <https://openid.net/specs/openid-connect-core-1_0.html>.
@@ -1159,43 +1170,112 @@ Table of Contents
               DOI 10.17487/RFC8628, August 2019,
               <https://www.rfc-editor.org/rfc/rfc8628>.
 
+15.2.  Informative References
+
+   [RFC8693]  Jones, M., Nadalin, A., Campbell, B., Ed., Bradley, J.,
+              and C. Mortimore, "OAuth 2.0 Token Exchange", RFC 8693,
+              DOI 10.17487/RFC8693, January 2020,
+              <https://www.rfc-editor.org/rfc/rfc8693>.
+
 Appendix A.  Example Usage in Various Flows and Use Cases
 
-   Here are some non-normative examples of how Entity Profiles might be
-   applied in different OAuth flows and use cases:
+   The following non-normative examples illustrate how Entity Profiles
+   might appear in various OAuth flows.
 
-      +=================================+================+==========+
-      | Flow / Use Case                 | Client Profile | Subject  |
-      |                                 |                | Profile  |
-      +=================================+================+==========+
-      | Authorization Code Flow (Web    | web_app        | user     |
-      | App)                            |                |          |
-      +---------------------------------+----------------+----------+
-      | Authorization Code Flow (Mobile | native_app     | user     |
-      | App)                            |                |          |
-      +---------------------------------+----------------+----------+
-      | Client Credentials Flow (S2S)   | service        | service  |
-      +---------------------------------+----------------+----------+
-      | Device Authorization Flow       | device         | user     |
-      | (Smart TV app)                  | native_app     |          |
-      +---------------------------------+----------------+----------+
-      | Token Exchange (RFC 8693) OBO   | service        | user     |
-      | user                            | web_app        |          |
-      +---------------------------------+----------------+----------+
-      | Resource Owner Password         | web_app        | user     |
-      | Credentials Flow (legacy)       |                |          |
-      +---------------------------------+----------------+----------+
-      | S2S OBO Flows (e.g., Service    | service        | service  |
-      | Mesh)                           |                |          |
-      +---------------------------------+----------------+----------+
-      | AI agents acting as itself      | service        | ai_agent |
-      | (e.g., Workspace bots)          | ai_agent       | service  |
-      +---------------------------------+----------------+----------+
-      | AI agents acting on behalf of a | ai_agent       | user     |
-      | user (e.g., personal assistant) |                |          |
-      +---------------------------------+----------------+----------+
+     +===================================+================+==========+
+     | Flow / Use Case                   | Client Profile | Subject  |
+     |                                   |                | Profile  |
+     +===================================+================+==========+
+     | Authorization Code Flow (Web App) | web_app        | user     |
+     +-----------------------------------+----------------+----------+
+     | Authorization Code Flow (SPA)     | browser_app    | user     |
+     +-----------------------------------+----------------+----------+
+     | Authorization Code Flow (Mobile   | native_app     | user     |
+     | App)                              |                |          |
+     +-----------------------------------+----------------+----------+
+     | Client Credentials Flow (Backend  | service        | service  |
+     | Service)                          |                |          |
+     +-----------------------------------+----------------+----------+
+     | Device Authorization Flow (Smart  | native_app     | user     |
+     | TV app)                           |                |          |
+     +-----------------------------------+----------------+----------+
+     | IoT sensors reporting telemetry   | device         | device   |
+     +-----------------------------------+----------------+----------+
+     | A web app talking to a downstream | service        | user     |
+     | API on behalf-of a user           | web_app        |          |
+     +-----------------------------------+----------------+----------+
+     | Resource Owner Password           | web_app        | user     |
+     | Credentials Flow (legacy)         |                |          |
+     +-----------------------------------+----------------+----------+
+     | S2S OBO Flows (e.g., Service      | service        | service  |
+     | Mesh)                             |                |          |
+     +-----------------------------------+----------------+----------+
+     | An AI acting as itself (e.g.,     | service        | ai_agent |
+     | Workspace bots)                   | ai_agent       | service  |
+     +-----------------------------------+----------------+----------+
+     | AI agents acting on behalf of a   | ai_agent       | user     |
+     | user (e.g., personal assistant)   |                |          |
+     +-----------------------------------+----------------+----------+
+     | An AI agent running in a desktop  | native_app     | user     |
+     | app                               | ai_agent       |          |
+     +-----------------------------------+----------------+----------+
 
                                   Table 1
+
+A.1.  Common Profile Patterns
+
+A.1.1.  Single Entity Acting as Both Client and Subject
+
+   In Client Credentials flows, the entity making the request is also
+   the subject of the resulting token.  Use the same profile value(s)
+   for both:
+
+   *  service / service - Traditional microservice
+
+   *  ai_agent service / ai_agent service - AI-powered backend service
+
+   *  device / device - Autonomous IoT device
+
+A.1.2.  Delegation and Impersonation
+
+   When one entity acts on behalf of another:
+
+   *  Client Profile: The entity making the API calls (typically service
+      or web_app)
+
+   *  Subject Profile: The entity whose authority is being exercised
+      (typically user)
+
+   *  The distinction between delegation and impersonation is not
+      captured in Entity Profiles; use other token claims (e.g., act
+      from [RFC8693])
+
+A.1.3.  Multiple Profile Values
+
+   Use space-separated values when an entity legitimately exhibits
+   characteristics of multiple profiles:
+
+   *  service ai_agent - A backend service that uses AI/ML for decision-
+      making
+
+   *  web_app ai_agent - A web application with integrated AI
+      capabilities
+
+   *  device native_app - May be acceptable in some contexts, but
+      generally prefer the more specific profile
+
+A.1.4.  Profile Mismatches to Avoid
+
+   Certain combinations should generally be rejected as semantically
+   invalid:
+
+   *  user service - An entity is either human or non-human
+
+   *  web_app native_app - These are mutually exclusive client
+      architectures
+
+   *  browser_app web_app - These are mutually exclusive client
+      architectures
 
 Appendix B.  Document History
 

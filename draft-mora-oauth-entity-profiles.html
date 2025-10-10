@@ -8,7 +8,7 @@
 <meta content="Sreyantha Chary Mora" name="author">
 <meta content="Pamela Dingle" name="author">
 <meta content="
-       This specification introduces Entity Profiles as a mechanism to categorize OAuth 2.0 entities—clients and subjects—based on their operational context. Entity Profiles provide structured descriptors for the client initiating the OAuth flow and the subject represented in the issued tokens. This document defines new JWT Claim names and metadata parameters for use in access tokens, ID tokens, token introspection responses, dynamic client registration, and Authorization Server metadata. 
+       This specification introduces Entity Profiles as a mechanism to categorize OAuth 2.0 entities—clients and subjects—based on their operational context. Entity Profiles provide structured descriptors for the client initiating the OAuth flow and the subject represented in tokens. This document defines new JWT Claim names and metadata parameters for use in access tokens, ID tokens, token introspection responses, dynamic client registration, and Authorization Server metadata. 
     " name="description">
 <meta content="xml2rfc 3.30.2" name="generator">
 <meta content="OAuth" name="keyword">
@@ -1088,7 +1088,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <h1 id="title">OAuth 2.0 Entity Profiles</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
-<p id="section-abstract-1">This specification introduces Entity Profiles as a mechanism to categorize OAuth 2.0 entities—clients and subjects—based on their operational context. Entity Profiles provide structured descriptors for the client initiating the OAuth flow and the subject represented in the issued tokens. This document defines new JWT Claim names and metadata parameters for use in access tokens, ID tokens, token introspection responses, dynamic client registration, and Authorization Server metadata.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-1">This specification introduces Entity Profiles as a mechanism to categorize OAuth 2.0 entities—clients and subjects—based on their operational context. Entity Profiles provide structured descriptors for the client initiating the OAuth flow and the subject represented in tokens. This document defines new JWT Claim names and metadata parameters for use in access tokens, ID tokens, token introspection responses, dynamic client registration, and Authorization Server metadata.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 </section>
 <section class="note rfcEditorRemove" id="section-note.1">
       <h2 id="name-about-this-document">
@@ -1368,10 +1368,37 @@ svg :is([fill="white"], [fill^="#fff"]) {
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15">
-            <p id="section-toc.1-1.15.1"><a href="#section-15" class="auto internal xref">15</a>. <a href="#name-normative-references" class="internal xref">Normative References</a></p>
+            <p id="section-toc.1-1.15.1"><a href="#section-15" class="auto internal xref">15</a>. <a href="#name-references" class="internal xref">References</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15.2.1">
+                <p id="section-toc.1-1.15.2.1.1"><a href="#section-15.1" class="auto internal xref">15.1</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15.2.2">
+                <p id="section-toc.1-1.15.2.2.1"><a href="#section-15.2" class="auto internal xref">15.2</a>.  <a href="#name-informative-references" class="internal xref">Informative References</a></p>
+</li>
+            </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.16">
             <p id="section-toc.1-1.16.1"><a href="#appendix-A" class="auto internal xref">Appendix A</a>.  <a href="#name-example-usage-in-various-fl" class="internal xref">Example Usage in Various Flows and Use Cases</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.16.2.1">
+                <p id="section-toc.1-1.16.2.1.1"><a href="#appendix-A.1" class="auto internal xref">A.1</a>.  <a href="#name-common-profile-patterns" class="internal xref">Common Profile Patterns</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.16.2.1.2.1">
+                    <p id="section-toc.1-1.16.2.1.2.1.1"><a href="#appendix-A.1.1" class="auto internal xref">A.1.1</a>.  <a href="#name-single-entity-acting-as-bot" class="internal xref">Single Entity Acting as Both Client and Subject</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.16.2.1.2.2">
+                    <p id="section-toc.1-1.16.2.1.2.2.1"><a href="#appendix-A.1.2" class="auto internal xref">A.1.2</a>.  <a href="#name-delegation-and-impersonatio" class="internal xref">Delegation and Impersonation</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.16.2.1.2.3">
+                    <p id="section-toc.1-1.16.2.1.2.3.1"><a href="#appendix-A.1.3" class="auto internal xref">A.1.3</a>.  <a href="#name-multiple-profile-values" class="internal xref">Multiple Profile Values</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.16.2.1.2.4">
+                    <p id="section-toc.1-1.16.2.1.2.4.1"><a href="#appendix-A.1.4" class="auto internal xref">A.1.4</a>.  <a href="#name-profile-mismatches-to-avoid" class="internal xref">Profile Mismatches to Avoid</a></p>
+</li>
+                </ul>
+</li>
+            </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.17">
             <p id="section-toc.1-1.17.1"><a href="#appendix-B" class="auto internal xref">Appendix B</a>.  <a href="#name-document-history" class="internal xref">Document History</a></p>
@@ -1554,7 +1581,7 @@ appear in all capitals, as shown here.<a href="#section-1.1-1" class="pilcrow">�
 <a href="#section-3.1.7" class="section-number selfRef">3.1.7. </a><a href="#name-ai_agent" class="section-name selfRef"><code>ai_agent</code></a>
           </h4>
 <p id="section-3.1.7-1">An AI agent is an autonomous or semi-autonomous system capable of initiating actions and making decisions independently or on behalf of a user or organization. These agents may participate in OAuth flows as clients, subjects, or both. They might perform delegated tasks based on user instructions, operate persistently across sessions and services, possess their own identity, credentials, and entitlements. They are typically powered by machine learning or reasoning systems, exhibiting adaptive, context-aware, non-deterministic and proactive behavior over extended sessions and across multiple systems.<a href="#section-3.1.7-1" class="pilcrow">¶</a></p>
-<p id="section-3.1.7-2">AI agents can be deployed in various environments, such as backend services, cloud-based systems, edge devices, or within user-controlled platforms. Depending on their operational context and deployment, AI agents can be clients -- making outbound API calls, initiating OAuth flows or subjects -- acting as the resource owner in systems that authorize autonomous services. Depending on their ability to securely store credentials and maintain integrity, they may be classified as either confidential or public clients. In some contexts, even well-secured AI agents may be treated as public clients due to the inherent complexity and unpredictability of their behavior. While it is tough to objectively verify that the entity profile is indeed an AI agent, trusted publishers or registries can attest to the nature of the entity.<a href="#section-3.1.7-2" class="pilcrow">¶</a></p>
+<p id="section-3.1.7-2">AI agents can be deployed in various environments, such as backend services, cloud-based systems, edge devices, or within user-controlled platforms. Depending on their operational context and deployment, AI agents can be clients -- making outbound API calls and initiating OAuth flows; or, subjects -- acting as the resource owner in systems that authorize autonomous services. Depending on their ability to securely store credentials and maintain integrity, they may be classified as either confidential or public clients. In some contexts, even well-secured AI agents may be treated as public clients due to the inherent complexity and unpredictability of their behavior. While it is tough to objectively verify that the entity profile is indeed an AI agent, trusted publishers or registries can attest to the nature of the entity.<a href="#section-3.1.7-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1572,8 +1599,8 @@ appear in all capitals, as shown here.<a href="#section-1.1-1" class="pilcrow">�
         <h3 id="name-representation-in-token-cla">
 <a href="#section-3.3" class="section-number selfRef">3.3. </a><a href="#name-representation-in-token-cla" class="section-name selfRef">Representation in Token Claims and Metadata</a>
         </h3>
-<p id="section-3.3-1">The value of an Entity Profile Claim or metadata parameter is expressed as a space-delimited, case-insensitive list of strings. Each string represents a classification of the entity (either a client or a subject) and <span class="bcp14">MUST</span> adhere to the syntax defined below.<a href="#section-3.3-1" class="pilcrow">¶</a></p>
-<p id="section-3.3-2">Multiple values <span class="bcp14">MAY</span> be included in a single Claim if the entity fits into more than one category. The order of values is insignificant, and there is no implicit hierarchy or relationship between the values unless defined elsewhere. When multiple Entity Profiles are present, they aren't additive or cumulative; each value is interpreted independently. When including multiple values, the Entity Profile combinations <span class="bcp14">SHOULD</span> be semantically meaningful and validated against expected usage patterns. Profiles with conflicting semantics (e.g., <code>user</code> and <code>service</code>) <span class="bcp14">SHOULD</span> be rejected unless a clear operational justification exists (e.g., <code>user</code> and <code>ai_agent</code> to indicate a digital employee).<a href="#section-3.3-2" class="pilcrow">¶</a></p>
+<p id="section-3.3-1">The value of an Entity Profile, whether appearing as a Claim in JWT tokens or as a parameter in metadata or introspection responses, is expressed as a space-delimited, case-insensitive list of strings. Each string represents a classification of the entity (either a client or a subject) and <span class="bcp14">MUST</span> adhere to the syntax defined below.<a href="#section-3.3-1" class="pilcrow">¶</a></p>
+<p id="section-3.3-2">Multiple values <span class="bcp14">MAY</span> be included if the entity fits into more than one category. The order of values is insignificant, and there is no implicit hierarchy or relationship between the values. When multiple Entity Profiles are present, each value is interpreted independently. When including multiple values, the Entity Profile combinations <span class="bcp14">SHOULD</span> be semantically meaningful and validated against expected usage patterns. Conflicting profiles (e.g., <code>user service</code>) <span class="bcp14">SHOULD</span> be avoided unless a clear operational justification exists (e.g., <code>user ai_agent</code> to indicate an AI agent acting as a digital employee).<a href="#section-3.3-2" class="pilcrow">¶</a></p>
 <div class="lang-abnf sourcecode" id="section-3.3-3">
 <pre>
 entity-profile = profile-token * ( SP profile-token )
@@ -1684,7 +1711,7 @@ profile-token = 1*( ALPHA / DIGIT / "-" / "_" / "." )
       <dd class="break"></dd>
 </dl>
 <p id="section-6-3">If the provided <code>client_profile</code> does not match the server's policy or fails the server's validation &amp; verification checks, the Authorization Server <span class="bcp14">MUST</span> reject the registration request with an <code>invalid_client_metadata</code> error. The verification mechanisms for the <code>client_profile</code> value are out of scope for this specification, but it is recommended that Authorization Servers implement appropriate checks based on their security policies and operational context. They may also employ verification strategies like checking against known registries, validating against trusted sources, admin approval, metadata inference, out-of-band attestation by an accountable party etc.<a href="#section-6-3" class="pilcrow">¶</a></p>
-<p id="section-6-4">Authorization Servers <span class="bcp14">MAY</span> choose to ignore all or some of the provided Entity Profile values during registration, depending on their policies and other client metadata. Authorization Servers <span class="bcp14">MAY</span> also choose to assign additional Entity Profiles that aren't requested by the client based on their policies.<a href="#section-6-4" class="pilcrow">¶</a></p>
+<p id="section-6-4">Authorization Servers <span class="bcp14">MAY</span> choose to ignore all or some of the provided Entity Profile values during registration, depending on their policies and other client metadata. Authorization Servers <span class="bcp14">MAY</span> also choose to assign additional Entity Profiles that are not requested by the client based on their policies.<a href="#section-6-4" class="pilcrow">¶</a></p>
 <p id="section-6-5">Below is an example of how this metadata parameter might be included in a Dynamic Client Registration request. Other standard parameters are omitted for brevity:<a href="#section-6-5" class="pilcrow">¶</a></p>
 <div class="lang-json sourcecode" id="section-6-6">
 <pre>
@@ -1906,10 +1933,10 @@ profile-token = 1*( ALPHA / DIGIT / "-" / "_" / "." )
 <p id="section-10-1">Resource Servers handling tokens with Entity Profile Claims:<a href="#section-10-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-10-2.1">
-          <p id="section-10-2.1.1"><span class="bcp14">SHOULD</span> use <code>sub_profile</code> and <code>client_profile</code> values to inform access control decisions and apply appropriate policies.<a href="#section-10-2.1.1" class="pilcrow">¶</a></p>
+          <p id="section-10-2.1.1"><span class="bcp14">SHOULD</span> use <code>sub_profile</code> and <code>client_profile</code> Claims to inform access control decisions and apply appropriate policies.<a href="#section-10-2.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-10-2.2">
-          <p id="section-10-2.2.1"><span class="bcp14">SHOULD</span> apply conservative or default-deny policies when processing unrecognized Entity Profile values, when Entity Profile values are missing, or when the semantics of the Entity Profile are not known.<a href="#section-10-2.2.1" class="pilcrow">¶</a></p>
+          <p id="section-10-2.2.1"><span class="bcp14">SHOULD</span> apply conservative or default-deny policies when processing unrecognized Entity Profile Claims, when Entity Profile values are missing, or when the semantics of the Entity Profile are not known.<a href="#section-10-2.2.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-10-2.3">
           <p id="section-10-2.3.1"><span class="bcp14">MAY</span> log Entity Profile information for auditing, monitoring, and anomaly detection purposes.<a href="#section-10-2.3.1" class="pilcrow">¶</a></p>
@@ -1934,22 +1961,22 @@ client_profiles = set(token.get("client_profile", "").split(" "))
 sub_profiles = set(token.get("sub_profile", "").split(" "))
 
 # Define applicable policies
-policies = []
+policies_to_apply = []
 
 if "service" in client_profiles:
     # Add service-specific policies
-    policies.append(apply_service_policy)
+    policies_to_apply.append(apply_service_policy)
 
 if "ai_agent" in sub_profiles:
     # Add AI agent-specific policies
-    policies.append(apply_ai_agent_policy)
+    policies_to_apply.append(apply_ai_agent_policy)
 
 if "user" in sub_profiles:
     # Add user-specific policies
-    policies.append(apply_user_policy)
+    policies_to_apply.append(apply_user_policy)
 
 # Evaluate combined policies (e.g., intersection of permissions or most restrictive)
-final_decision = evaluate_combined_policies(policies, mode="most_restrictive")
+final_decision = evaluate_combined_policies(policies_to_apply, mode="most_restrictive")
 
 </pre><a href="#section-10.1-3" class="pilcrow">¶</a>
 </div>
@@ -1962,8 +1989,8 @@ final_decision = evaluate_combined_policies(policies, mode="most_restrictive")
       <h2 id="name-delegation-considerations">
 <a href="#section-11" class="section-number selfRef">11. </a><a href="#name-delegation-considerations" class="section-name selfRef">Delegation Considerations</a>
       </h2>
-<p id="section-11-1">Entity Profile attributes or Claims do not define or imply delegation chains. They serve to classify entities in an OAuth flow and to provide advisory metadata for the consumers of these attributes with additional context for better policy enforcement and decision making. Future specifications may define delegation semantics independently.<a href="#section-11-1" class="pilcrow">¶</a></p>
-<p id="section-11-2">Implementations <span class="bcp14">MAY</span> include Entity Profile Claims in delegated flows to provide additional context of the delegators and delegates.<a href="#section-11-2" class="pilcrow">¶</a></p>
+<p id="section-11-1">Entity Profile Claims do not define or imply delegation relationships. They are intended solely to classify entities participating in an OAuth flow and to provide additional information that can assist relying parties in enforcing policies or making authorization decisions.<a href="#section-11-1" class="pilcrow">¶</a></p>
+<p id="section-11-2">Implementations <span class="bcp14">MAY</span> include Entity Profile Claims in delegated contexts to convey additional information about the delegator or delegate. For example, in a token exchange flow <span>[<a href="#RFC8693" class="cite xref">RFC8693</a>]</span>, the <code>act</code> Claim could include a <code>sub_profile</code> value to indicate the profile of the acting entity within the delegation chain.<a href="#section-11-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="security-considerations">
@@ -2461,57 +2488,77 @@ final_decision = evaluate_combined_policies(policies, mode="most_restrictive")
 </div>
 </section>
 </div>
-<div id="sec-normative-references">
+<div id="sec-combined-references">
 <section id="section-15">
-      <h2 id="name-normative-references">
-<a href="#section-15" class="section-number selfRef">15. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+      <h2 id="name-references">
+<a href="#section-15" class="section-number selfRef">15. </a><a href="#name-references" class="section-name selfRef">References</a>
       </h2>
+<div id="sec-normative-references">
+<section id="section-15.1">
+        <h3 id="name-normative-references">
+<a href="#section-15.1" class="section-number selfRef">15.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+        </h3>
 <dl class="references">
 <dt id="OIDC">[OIDC]</dt>
-      <dd>
+        <dd>
 <span class="refTitle">"OpenID Connect Core 1.0"</span>, <time datetime="2023-12" class="refDate">December 2023</time>, <span>&lt;<a href="https://openid.net/specs/openid-connect-core-1_0.html">https://openid.net/specs/openid-connect-core-1_0.html</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC2119">[RFC2119]</dt>
-      <dd>
+        <dd>
 <span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc2119">https://www.rfc-editor.org/rfc/rfc2119</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC5234">[RFC5234]</dt>
-      <dd>
+        <dd>
 <span class="refAuthor">Crocker, D., Ed.</span> and <span class="refAuthor">P. Overell</span>, <span class="refTitle">"Augmented BNF for Syntax Specifications: ABNF"</span>, <span class="seriesInfo">STD 68</span>, <span class="seriesInfo">RFC 5234</span>, <span class="seriesInfo">DOI 10.17487/RFC5234</span>, <time datetime="2008-01" class="refDate">January 2008</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc5234">https://www.rfc-editor.org/rfc/rfc5234</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC6749">[RFC6749]</dt>
-      <dd>
+        <dd>
 <span class="refAuthor">Hardt, D., Ed.</span>, <span class="refTitle">"The OAuth 2.0 Authorization Framework"</span>, <span class="seriesInfo">RFC 6749</span>, <span class="seriesInfo">DOI 10.17487/RFC6749</span>, <time datetime="2012-10" class="refDate">October 2012</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc6749">https://www.rfc-editor.org/rfc/rfc6749</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC6750">[RFC6750]</dt>
-      <dd>
+        <dd>
 <span class="refAuthor">Jones, M.</span> and <span class="refAuthor">D. Hardt</span>, <span class="refTitle">"The OAuth 2.0 Authorization Framework: Bearer Token Usage"</span>, <span class="seriesInfo">RFC 6750</span>, <span class="seriesInfo">DOI 10.17487/RFC6750</span>, <time datetime="2012-10" class="refDate">October 2012</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc6750">https://www.rfc-editor.org/rfc/rfc6750</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC7519">[RFC7519]</dt>
-      <dd>
+        <dd>
 <span class="refAuthor">Jones, M.</span>, <span class="refAuthor">Bradley, J.</span>, and <span class="refAuthor">N. Sakimura</span>, <span class="refTitle">"JSON Web Token (JWT)"</span>, <span class="seriesInfo">RFC 7519</span>, <span class="seriesInfo">DOI 10.17487/RFC7519</span>, <time datetime="2015-05" class="refDate">May 2015</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7519">https://www.rfc-editor.org/rfc/rfc7519</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC7591">[RFC7591]</dt>
-      <dd>
+        <dd>
 <span class="refAuthor">Richer, J., Ed.</span>, <span class="refAuthor">Jones, M.</span>, <span class="refAuthor">Bradley, J.</span>, <span class="refAuthor">Machulak, M.</span>, and <span class="refAuthor">P. Hunt</span>, <span class="refTitle">"OAuth 2.0 Dynamic Client Registration Protocol"</span>, <span class="seriesInfo">RFC 7591</span>, <span class="seriesInfo">DOI 10.17487/RFC7591</span>, <time datetime="2015-07" class="refDate">July 2015</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7591">https://www.rfc-editor.org/rfc/rfc7591</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC7662">[RFC7662]</dt>
-      <dd>
+        <dd>
 <span class="refAuthor">Richer, J., Ed.</span>, <span class="refTitle">"OAuth 2.0 Token Introspection"</span>, <span class="seriesInfo">RFC 7662</span>, <span class="seriesInfo">DOI 10.17487/RFC7662</span>, <time datetime="2015-10" class="refDate">October 2015</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7662">https://www.rfc-editor.org/rfc/rfc7662</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC8174">[RFC8174]</dt>
-      <dd>
+        <dd>
 <span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8174">https://www.rfc-editor.org/rfc/rfc8174</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC8414">[RFC8414]</dt>
-      <dd>
+        <dd>
 <span class="refAuthor">Jones, M.</span>, <span class="refAuthor">Sakimura, N.</span>, and <span class="refAuthor">J. Bradley</span>, <span class="refTitle">"OAuth 2.0 Authorization Server Metadata"</span>, <span class="seriesInfo">RFC 8414</span>, <span class="seriesInfo">DOI 10.17487/RFC8414</span>, <time datetime="2018-06" class="refDate">June 2018</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8414">https://www.rfc-editor.org/rfc/rfc8414</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC8628">[RFC8628]</dt>
-    <dd>
+      <dd>
 <span class="refAuthor">Denniss, W.</span>, <span class="refAuthor">Bradley, J.</span>, <span class="refAuthor">Jones, M.</span>, and <span class="refAuthor">H. Tschofenig</span>, <span class="refTitle">"OAuth 2.0 Device Authorization Grant"</span>, <span class="seriesInfo">RFC 8628</span>, <span class="seriesInfo">DOI 10.17487/RFC8628</span>, <time datetime="2019-08" class="refDate">August 2019</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8628">https://www.rfc-editor.org/rfc/rfc8628</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 </dl>
+</section>
+</div>
+<div id="sec-informative-references">
+<section id="section-15.2">
+        <h3 id="name-informative-references">
+<a href="#section-15.2" class="section-number selfRef">15.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+        </h3>
+<dl class="references">
+<dt id="RFC8693">[RFC8693]</dt>
+      <dd>
+<span class="refAuthor">Jones, M.</span>, <span class="refAuthor">Nadalin, A.</span>, <span class="refAuthor">Campbell, B., Ed.</span>, <span class="refAuthor">Bradley, J.</span>, and <span class="refAuthor">C. Mortimore</span>, <span class="refTitle">"OAuth 2.0 Token Exchange"</span>, <span class="seriesInfo">RFC 8693</span>, <span class="seriesInfo">DOI 10.17487/RFC8693</span>, <time datetime="2020-01" class="refDate">January 2020</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8693">https://www.rfc-editor.org/rfc/rfc8693</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+</div>
 </section>
 </div>
 <div id="example-usage-in-various-flows-and-use-cases">
@@ -2519,7 +2566,7 @@ final_decision = evaluate_combined_policies(policies, mode="most_restrictive")
       <h2 id="name-example-usage-in-various-fl">
 <a href="#appendix-A" class="section-number selfRef">Appendix A. </a><a href="#name-example-usage-in-various-fl" class="section-name selfRef">Example Usage in Various Flows and Use Cases</a>
       </h2>
-<p id="appendix-A-1">Here are some non-normative examples of how Entity Profiles might be applied in different OAuth flows and use cases:<a href="#appendix-A-1" class="pilcrow">¶</a></p>
+<p id="appendix-A-1">The following non-normative examples illustrate how Entity Profiles might appear in various OAuth flows.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
 <table class="center" id="table-1">
         <caption><a href="#table-1" class="selfRef">Table 1</a></caption>
 <thead>
@@ -2540,6 +2587,15 @@ final_decision = evaluate_combined_policies(policies, mode="most_restrictive")
 </td>
           </tr>
           <tr>
+            <td class="text-left" rowspan="1" colspan="1">Authorization Code Flow (SPA)</td>
+            <td class="text-left" rowspan="1" colspan="1">
+              <code>browser_app</code>
+</td>
+            <td class="text-left" rowspan="1" colspan="1">
+              <code>user</code>
+</td>
+          </tr>
+          <tr>
             <td class="text-left" rowspan="1" colspan="1">Authorization Code Flow (Mobile App)</td>
             <td class="text-left" rowspan="1" colspan="1">
               <code>native_app</code>
@@ -2549,7 +2605,7 @@ final_decision = evaluate_combined_policies(policies, mode="most_restrictive")
 </td>
           </tr>
           <tr>
-            <td class="text-left" rowspan="1" colspan="1">Client Credentials Flow (S2S)</td>
+            <td class="text-left" rowspan="1" colspan="1">Client Credentials Flow (Backend Service)</td>
             <td class="text-left" rowspan="1" colspan="1">
               <code>service</code>
 </td>
@@ -2560,14 +2616,23 @@ final_decision = evaluate_combined_policies(policies, mode="most_restrictive")
           <tr>
             <td class="text-left" rowspan="1" colspan="1">Device Authorization Flow (Smart TV app)</td>
             <td class="text-left" rowspan="1" colspan="1">
-              <code>device native_app</code>
+              <code>native_app</code>
 </td>
             <td class="text-left" rowspan="1" colspan="1">
               <code>user</code>
 </td>
           </tr>
           <tr>
-            <td class="text-left" rowspan="1" colspan="1">Token Exchange (RFC 8693) OBO user</td>
+            <td class="text-left" rowspan="1" colspan="1">IoT sensors reporting telemetry</td>
+            <td class="text-left" rowspan="1" colspan="1">
+              <code>device</code>
+</td>
+            <td class="text-left" rowspan="1" colspan="1">
+              <code>device</code>
+</td>
+          </tr>
+          <tr>
+            <td class="text-left" rowspan="1" colspan="1">A web app talking to a downstream API on behalf-of a user</td>
             <td class="text-left" rowspan="1" colspan="1">
               <code>service web_app</code>
 </td>
@@ -2594,7 +2659,7 @@ final_decision = evaluate_combined_policies(policies, mode="most_restrictive")
 </td>
           </tr>
           <tr>
-            <td class="text-left" rowspan="1" colspan="1">AI agents acting as itself (e.g., Workspace bots)</td>
+            <td class="text-left" rowspan="1" colspan="1">An AI  acting as itself (e.g., Workspace bots)</td>
             <td class="text-left" rowspan="1" colspan="1">
               <code>service ai_agent</code>
 </td>
@@ -2611,8 +2676,100 @@ final_decision = evaluate_combined_policies(policies, mode="most_restrictive")
               <code>user</code>
 </td>
           </tr>
+          <tr>
+            <td class="text-left" rowspan="1" colspan="1">An AI agent running in a desktop app</td>
+            <td class="text-left" rowspan="1" colspan="1">
+              <code>native_app ai_agent</code>
+</td>
+            <td class="text-left" rowspan="1" colspan="1">
+              <code>user</code>
+</td>
+          </tr>
         </tbody>
       </table>
+<div id="common-profile-patterns">
+<section id="appendix-A.1">
+        <h3 id="name-common-profile-patterns">
+<a href="#appendix-A.1" class="section-number selfRef">A.1. </a><a href="#name-common-profile-patterns" class="section-name selfRef">Common Profile Patterns</a>
+        </h3>
+<div id="single-entity-acting-as-both-client-and-subject">
+<section id="appendix-A.1.1">
+          <h4 id="name-single-entity-acting-as-bot">
+<a href="#appendix-A.1.1" class="section-number selfRef">A.1.1. </a><a href="#name-single-entity-acting-as-bot" class="section-name selfRef">Single Entity Acting as Both Client and Subject</a>
+          </h4>
+<p id="appendix-A.1.1-1">In Client Credentials flows, the entity making the request is also the subject of the resulting token. Use the same profile value(s) for both:<a href="#appendix-A.1.1-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-A.1.1-2.1">
+              <p id="appendix-A.1.1-2.1.1"><code>service</code> / <code>service</code> - Traditional microservice<a href="#appendix-A.1.1-2.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="appendix-A.1.1-2.2">
+              <p id="appendix-A.1.1-2.2.1"><code>ai_agent service</code> / <code>ai_agent service</code> - AI-powered backend service<a href="#appendix-A.1.1-2.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="appendix-A.1.1-2.3">
+              <p id="appendix-A.1.1-2.3.1"><code>device</code> / <code>device</code> - Autonomous IoT device<a href="#appendix-A.1.1-2.3.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+</section>
+</div>
+<div id="delegation-and-impersonation">
+<section id="appendix-A.1.2">
+          <h4 id="name-delegation-and-impersonatio">
+<a href="#appendix-A.1.2" class="section-number selfRef">A.1.2. </a><a href="#name-delegation-and-impersonatio" class="section-name selfRef">Delegation and Impersonation</a>
+          </h4>
+<p id="appendix-A.1.2-1">When one entity acts on behalf of another:<a href="#appendix-A.1.2-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-A.1.2-2.1">
+              <p id="appendix-A.1.2-2.1.1">Client Profile: The entity making the API calls (typically <code>service</code> or <code>web_app</code>)<a href="#appendix-A.1.2-2.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="appendix-A.1.2-2.2">
+              <p id="appendix-A.1.2-2.2.1">Subject Profile: The entity whose authority is being exercised (typically <code>user</code>)<a href="#appendix-A.1.2-2.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="appendix-A.1.2-2.3">
+              <p id="appendix-A.1.2-2.3.1">The distinction between delegation and impersonation is not captured in Entity Profiles; use other token claims (e.g., <code>act</code> from <span>[<a href="#RFC8693" class="cite xref">RFC8693</a>]</span>)<a href="#appendix-A.1.2-2.3.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+</section>
+</div>
+<div id="multiple-profile-values">
+<section id="appendix-A.1.3">
+          <h4 id="name-multiple-profile-values">
+<a href="#appendix-A.1.3" class="section-number selfRef">A.1.3. </a><a href="#name-multiple-profile-values" class="section-name selfRef">Multiple Profile Values</a>
+          </h4>
+<p id="appendix-A.1.3-1">Use space-separated values when an entity legitimately exhibits characteristics of multiple profiles:<a href="#appendix-A.1.3-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-A.1.3-2.1">
+              <p id="appendix-A.1.3-2.1.1"><code>service ai_agent</code> - A backend service that uses AI/ML for decision-making<a href="#appendix-A.1.3-2.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="appendix-A.1.3-2.2">
+              <p id="appendix-A.1.3-2.2.1"><code>web_app ai_agent</code> - A web application with integrated AI capabilities<a href="#appendix-A.1.3-2.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="appendix-A.1.3-2.3">
+              <p id="appendix-A.1.3-2.3.1"><code>device native_app</code> - May be acceptable in some contexts, but generally prefer the more specific profile<a href="#appendix-A.1.3-2.3.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+</section>
+</div>
+<div id="profile-mismatches-to-avoid">
+<section id="appendix-A.1.4">
+          <h4 id="name-profile-mismatches-to-avoid">
+<a href="#appendix-A.1.4" class="section-number selfRef">A.1.4. </a><a href="#name-profile-mismatches-to-avoid" class="section-name selfRef">Profile Mismatches to Avoid</a>
+          </h4>
+<p id="appendix-A.1.4-1">Certain combinations should generally be rejected as semantically invalid:<a href="#appendix-A.1.4-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-A.1.4-2.1">
+              <p id="appendix-A.1.4-2.1.1"><code>user service</code> - An entity is either human or non-human<a href="#appendix-A.1.4-2.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="appendix-A.1.4-2.2">
+              <p id="appendix-A.1.4-2.2.1"><code>web_app native_app</code> - These are mutually exclusive client architectures<a href="#appendix-A.1.4-2.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="appendix-A.1.4-2.3">
+              <p id="appendix-A.1.4-2.3.1"><code>browser_app web_app</code> - These are mutually exclusive client architectures<a href="#appendix-A.1.4-2.3.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+</section>
+</div>
+</section>
+</div>
 </section>
 </div>
 <div id="document-history">

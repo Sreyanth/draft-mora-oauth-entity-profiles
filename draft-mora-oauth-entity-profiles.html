@@ -2028,7 +2028,7 @@ final_decision = evaluate_combined_policies(policies_to_apply, mode="most_restri
         <h3 id="name-separation-from-authenticat">
 <a href="#section-12.4" class="section-number selfRef">12.4. </a><a href="#name-separation-from-authenticat" class="section-name selfRef">Separation from Authentication and Assurance</a>
         </h3>
-<p id="section-12.4-1">Entity Profile Claims are intended solely for classification and do not convey authentication strength or assurance. It is advised that these Entity Profile Claims not replace Claims such as <code>acr</code>. Authorization decisions should incorporate authentication context Claims alongside Entity Profiles to ensure robust access control.<a href="#section-12.4-1" class="pilcrow">¶</a></p>
+<p id="section-12.4-1">Entity Profile Claims are intended solely for classification and do not convey authentication strength or assurance. It is advised that these Entity Profile Claims not replace Claims such as <code>acr</code> (Authentication Context Class Reference <span>[<a href="#OIDC" class="cite xref">OIDC</a>]</span>). Authorization decisions should incorporate authentication context Claims alongside Entity Profiles to ensure robust access control.<a href="#section-12.4-1" class="pilcrow">¶</a></p>
 <p id="section-12.4-2">Also, different Entity Profiles often require different levels of authentication assurance. It is recommended that Authorization Servers define minimum assurance requirements per Entity Profile, express these through the <code>acr</code> Claim, and reject authorization requests that do not meet the required assurance level. This alignment helps prevent unauthorized access by weakly authenticated entities.<a href="#section-12.4-2" class="pilcrow">¶</a></p>
 </section>
 </div>

@@ -801,9 +801,10 @@ Table of Contents
 
    Entity Profile Claims are intended solely for classification and do
    not convey authentication strength or assurance.  It is advised that
-   these Entity Profile Claims not replace Claims such as acr.
-   Authorization decisions should incorporate authentication context
-   Claims alongside Entity Profiles to ensure robust access control.
+   these Entity Profile Claims not replace Claims such as acr
+   (Authentication Context Class Reference [OIDC]).  Authorization
+   decisions should incorporate authentication context Claims alongside
+   Entity Profiles to ensure robust access control.
 
    Also, different Entity Profiles often require different levels of
    authentication assurance.  It is recommended that Authorization

@@ -5,7 +5,7 @@
 Web Authorization Protocol                                    S. C. Mora
 Internet-Draft                                                 P. Dingle
 Intended status: Standards Track                   Microsoft Corporation
-Expires: 13 April 2026                                   10 October 2025
+Expires: 20 April 2026                                   17 October 2025
 
 
                        OAuth 2.0 Entity Profiles
@@ -54,7 +54,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 13 April 2026.
+   This Internet-Draft will expire on 20 April 2026.
 
 Copyright Notice
 
@@ -138,11 +138,6 @@ Table of Contents
      15.1.  Normative References
      15.2.  Informative References
    Appendix A.  Example Usage in Various Flows and Use Cases
-     A.1.  Common Profile Patterns
-       A.1.1.  Single Entity Acting as Both Client and Subject
-       A.1.2.  Delegation and Impersonation
-       A.1.3.  Multiple Profile Values
-       A.1.4.  Profile Mismatches to Avoid
    Appendix B.  Document History
      B.1.  draft-00
    Acknowledgments
@@ -196,10 +191,10 @@ Table of Contents
 
    *  *Client Profile*:  A descriptor for the client software or
          application initiating the OAuth flow (e.g., web app, native
-         app, AI agent etc.,).
+         app, AI agent etc.).
 
    *  *Subject Profile*:  A descriptor for the entity represented by the
-         token subject (e.g., user, AI agent, service account etc.,).
+         token subject (e.g., user, AI agent, service account etc.).
 
 2.  Motivation and Use Cases
 
@@ -227,7 +222,7 @@ Table of Contents
       take on greater roles, profiles offer a way to signal and manage
       their participation explicitly.
 
-   *  *User experience*: Customized interfaces and consent flows, such
+   *  *User Experience*: Customized interfaces and consent flows, such
       as enhanced disclosures and controls for human users and granular
       permissions for AI agents.
 
@@ -309,7 +304,7 @@ Table of Contents
    based on user instructions, operate persistently across sessions and
    services, possess their own identity, credentials, and entitlements.
    They are typically powered by machine learning or reasoning systems,
-   exhibiting adaptive, context-aware, non-deterministic and proactive
+   exhibiting adaptive, context-aware, non-deterministic, and proactive
    behavior over extended sessions and across multiple systems.
 
    AI agents can be deployed in various environments, such as backend
@@ -322,9 +317,9 @@ Table of Contents
    may be classified as either confidential or public clients.  In some
    contexts, even well-secured AI agents may be treated as public
    clients due to the inherent complexity and unpredictability of their
-   behavior.  While it is tough to objectively verify that the entity
-   profile is indeed an AI agent, trusted publishers or registries can
-   attest to the nature of the entity.
+   behavior.  While it can be difficult to objectively verify that an
+   entity truly qualifies as an AI agent, trusted publishers or
+   registries may attest to the nature of the entity.
 
 3.2.  Private or Custom Entity Profiles
 
@@ -372,11 +367,11 @@ Table of Contents
 
    *  Be privately defined (see Section 3.2).
 
-   While processing these values, Authorization Servers and Resource
+   When processing these values, Authorization Servers and Resource
    Servers MUST NOT assume any implicit relationships or hierarchies
    between the Entity Profiles unless explicitly agreed upon by the
-   Authorization Server and the Resource Server or is defined in a
-   specification.
+   Authorization Server and the Resource Server or if defined in a
+   different specification.
 
    For example, a token might include the Entity Profiles ai_agent
    acme_verified_robot, where acme_verified_robot is a vendor-defined
@@ -468,7 +463,7 @@ Table of Contents
       Profile based on its policies or the client's other metadata.
 
    If the provided client_profile does not match the server's policy or
-   fails the server's validation & verification checks, the
+   fails the server's validation and verification checks, the
    Authorization Server MUST reject the registration request with an
    invalid_client_metadata error.  The verification mechanisms for the
    client_profile value are out of scope for this specification, but it
@@ -535,7 +530,7 @@ Table of Contents
       match their actual nature
 
    In environments where clients are manually registered or configured
-   (e.g., enterprise deployments), the client_profile provided MUST
+   (e.g., enterprise deployments), client_profile provided MUST
    accurately represent the nature of the client.  The value MUST be a
    registered Entity Profile or follow the naming conventions for
    private Entity Profiles.
@@ -728,8 +723,8 @@ Table of Contents
    writing Entity Profile checks that override previous decisions
    imperatively, as this can lead to inconsistent behavior.
 
-   Here is a non-normative pseudo-code example of these values can be
-   used for enforcing authorization policies at a Resource Server:
+   Here is a non-normative pseudo-code example of how these values can
+   be used for enforcing authorization policies at a Resource Server:
 
    client_profiles = set(token.get("client_profile", "").split(" "))
    sub_profiles = set(token.get("sub_profile", "").split(" "))
@@ -790,7 +785,7 @@ Table of Contents
 
 12.3.  Consistency and Semantics
 
-   Authorization Servers, Resource Servers and Clients must interpret
+   Authorization Servers, Resource Servers, and Clients must interpret
    Entity Profile Claims consistently.  To avoid misclassification or
    policy errors they should follow the definitions and semantics
    outlined in the specification, and not infer additional meanings or
@@ -800,9 +795,9 @@ Table of Contents
 12.4.  Separation from Authentication and Assurance
 
    Entity Profile Claims are intended solely for classification and do
-   not convey authentication strength or assurance.  It is advised that
-   these Entity Profile Claims not replace Claims such as acr
-   (Authentication Context Class Reference [OIDC]).  Authorization
+   not convey authentication strength or assurance.  It is advised not
+   to use these Entity Profile Claims as replacements for Claims such as
+   acr (Authentication Context Class Reference [OIDC]).  Authorization
    decisions should incorporate authentication context Claims alongside
    Entity Profiles to ensure robust access control.
 
@@ -860,7 +855,7 @@ Table of Contents
    lead to performance issues, particularly in environments with limited
    bandwidth or storage.  Implementers should consider the impact of
    token size on their systems and apply data minimization principles,
-   including only including Entity Profile Claims when necessary.
+   only including Entity Profile Claims when necessary.
 
 13.  Privacy Considerations
 
@@ -919,8 +914,8 @@ Table of Contents
    group.  This registry will contain the string identifiers used to
    represent the Entity Profiles described in this specification.
 
-   NOTE: Private or vendor-specific Entity Profiles MAY use namespaced
-   values do not require IANA registration.
+   NOTE: Private or vendor-specific Entity Profiles may use namespaced
+   values and do not require IANA registration.
 
 14.1.1.  Registration Template
 
@@ -1222,61 +1217,6 @@ Appendix A.  Example Usage in Various Flows and Use Cases
      +-----------------------------------+----------------+----------+
 
                                   Table 1
-
-A.1.  Common Profile Patterns
-
-A.1.1.  Single Entity Acting as Both Client and Subject
-
-   In Client Credentials flows, the entity making the request is also
-   the subject of the resulting token.  Use the same profile value(s)
-   for both:
-
-   *  service / service - Traditional microservice
-
-   *  ai_agent service / ai_agent service - AI-powered backend service
-
-   *  device / device - Autonomous IoT device
-
-A.1.2.  Delegation and Impersonation
-
-   When one entity acts on behalf of another:
-
-   *  Client Profile: The entity making the API calls (typically service
-      or web_app)
-
-   *  Subject Profile: The entity whose authority is being exercised
-      (typically user)
-
-   *  The distinction between delegation and impersonation is not
-      captured in Entity Profiles; use other token claims (e.g., act
-      from [RFC8693])
-
-A.1.3.  Multiple Profile Values
-
-   Use space-separated values when an entity legitimately exhibits
-   characteristics of multiple profiles:
-
-   *  service ai_agent - A backend service that uses AI/ML for decision-
-      making
-
-   *  web_app ai_agent - A web application with integrated AI
-      capabilities
-
-   *  device native_app - May be acceptable in some contexts, but
-      generally prefer the more specific profile
-
-A.1.4.  Profile Mismatches to Avoid
-
-   Certain combinations should generally be rejected as semantically
-   invalid:
-
-   *  user service - An entity is either human or non-human
-
-   *  web_app native_app - These are mutually exclusive client
-      architectures
-
-   *  browser_app web_app - These are mutually exclusive client
-      architectures
 
 Appendix B.  Document History
 

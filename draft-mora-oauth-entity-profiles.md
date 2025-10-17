@@ -48,10 +48,12 @@ normative:
     title: "OpenID Connect Core 1.0"
     target: "https://openid.net/specs/openid-connect-core-1_0.html"
     date: "December 2023"
+informative:
+  RFC8693:
 
 --- abstract
 
-This specification introduces Entity Profiles as a mechanism to categorize OAuth 2.0 entities—clients and subjects—based on their operational context. Entity Profiles provide structured descriptors for the client initiating the OAuth flow and the subject represented in the issued tokens. This document defines new JWT Claim names and metadata parameters for use in access tokens, ID tokens, token introspection responses, dynamic client registration, and Authorization Server metadata.
+This specification introduces Entity Profiles as a mechanism to categorize OAuth 2.0 entities—clients and subjects—based on their operational context. Entity Profiles provide structured descriptors for the client initiating the OAuth flow and the subject represented in tokens. This document defines new JWT Claim names and metadata parameters for use in access tokens, ID tokens, token introspection responses, dynamic client registration, and Authorization Server metadata.
 
 --- middle
 
@@ -80,10 +82,10 @@ This document uses the terms "User", "Resource Owner", "Client", "Authorization 
 : A string-based descriptor identifying the category of an OAuth entity (client or subject) based on its operational context.
 
 - **Client Profile**:
-: A descriptor for the client software or application initiating the OAuth flow (e.g., web app, native app, AI agent etc.,).
+: A descriptor for the client software or application initiating the OAuth flow (e.g., web app, native app, AI agent etc.).
 
 - **Subject Profile**:
-: A descriptor for the entity represented by the token subject (e.g., user, AI agent, service account etc.,).
+: A descriptor for the entity represented by the token subject (e.g., user, AI agent, service account etc.).
 
 # Motivation and Use Cases
 
@@ -95,7 +97,7 @@ Current OAuth deployments lack a standardized way to represent and reason about 
 - **Risk Scoring and Security Posture**: Authorization Servers can assess and adjust risk and their security measures based on client type (e.g., public native app vs. backend service).
 - **Auditing and Forensics**: Security logs become more useful and interpretable when entity types are made explicit.
 - **Future-Proofing OAuth Flows**: As AI agents and autonomous systems take on greater roles, profiles offer a way to signal and manage their participation explicitly.
-- **User experience**: Customized interfaces and consent flows, such as enhanced disclosures and controls for human users and granular permissions for AI agents.
+- **User Experience**: Customized interfaces and consent flows, such as enhanced disclosures and controls for human users and granular permissions for AI agents.
 
 By introducing a consistent way to describe the operational context of clients and subjects, this specification enhances the overall authorization decisions, policy enforcement, risk assessment, and audit capabilities in OAuth 2.0 and OpenID Connect deployments.
 
@@ -107,9 +109,11 @@ By introducing a consistent way to describe the operational context of clients a
 The following is a list of Entity Profile values defined by this specification. These identifiers are not intended to be exhaustive, and additional profiles can be defined by implementers or through other specifications. The values defined herein are an intentionally small set that covers the most common scenarios.
 
 ### `user`
+
 A user is a human resource owner who interacts with the system through a client such as a web application, native application, user-agent-based application, or device interface. Users provide consent, make authorization decisions, and are typically assumed to have access to their own credentials, session tokens, and authorization settings on their devices. While users often act directly through a client, they may also delegate access to applications or AI agents acting on their behalf. It is assumed that users can make informed consent decisions, understand the implications of delegated access, and manage their own permissions within the system.
 
 ### `device`
+
 A device is a hardware-based computing entity (e.g., smart TVs, IoT sensors, mobile phones, kiosk terminals) that can host client applications. Devices may have limited user interfaces and may act autonomously or under user control. They are often constrained in security capabilities (e.g., lack of secure storage, no local display, indirect input methods) and typically require indirect authorization mechanisms such as the Device Authorization Grant {{RFC8628}}. Devices are generally considered public clients unless they can securely protect credentials.
 
 Devices are distinct from backend services or virtualized compute instances (e.g., VMs, containers) based on their physical deployment and user-facing interaction model.
@@ -132,9 +136,9 @@ A service is a non-human actor that represents a logical service, backend proces
 
 ### `ai_agent`
 
-An AI agent is an autonomous or semi-autonomous system capable of initiating actions and making decisions independently or on behalf of a user or organization. These agents may participate in OAuth flows as clients, subjects, or both. They might perform delegated tasks based on user instructions, operate persistently across sessions and services, possess their own identity, credentials, and entitlements. They are typically powered by machine learning or reasoning systems, exhibiting adaptive, context-aware, non-deterministic and proactive behavior over extended sessions and across multiple systems.
+An AI agent is an autonomous or semi-autonomous system capable of initiating actions and making decisions independently or on behalf of a user or organization. These agents may participate in OAuth flows as clients, subjects, or both. They might perform delegated tasks based on user instructions, operate persistently across sessions and services, possess their own identity, credentials, and entitlements. They are typically powered by machine learning or reasoning systems, exhibiting adaptive, context-aware, non-deterministic, and proactive behavior over extended sessions and across multiple systems.
 
-AI agents can be deployed in various environments, such as backend services, cloud-based systems, edge devices, or within user-controlled platforms. Depending on their operational context and deployment, AI agents can be clients -- making outbound API calls, initiating OAuth flows or subjects -- acting as the resource owner in systems that authorize autonomous services. Depending on their ability to securely store credentials and maintain integrity, they may be classified as either confidential or public clients. In some contexts, even well-secured AI agents may be treated as public clients due to the inherent complexity and unpredictability of their behavior. While it is tough to objectively verify that the entity profile is indeed an AI agent, trusted publishers or registries can attest to the nature of the entity.
+AI agents can be deployed in various environments, such as backend services, cloud-based systems, edge devices, or within user-controlled platforms. Depending on their operational context and deployment, AI agents can be clients -- making outbound API calls and initiating OAuth flows; or, subjects -- acting as the resource owner in systems that authorize autonomous services. Depending on their ability to securely store credentials and maintain integrity, they may be classified as either confidential or public clients. In some contexts, even well-secured AI agents may be treated as public clients due to the inherent complexity and unpredictability of their behavior. While it can be difficult to objectively verify that an entity truly qualifies as an AI agent, trusted publishers or registries may attest to the nature of the entity.
 
 ## Private or Custom Entity Profiles
 
@@ -142,9 +146,9 @@ Entity Profiles can be defined at will by those using this specification. Howeve
 
 ## Representation in Token Claims and Metadata
 
-The value of an Entity Profile Claim or metadata parameter is expressed as a space-delimited, case-insensitive list of strings. Each string represents a classification of the entity (either a client or a subject) and MUST adhere to the syntax defined below.
+The value of an Entity Profile, whether appearing as a Claim in JWT tokens or as a parameter in metadata or introspection responses, is expressed as a space-delimited, case-insensitive list of strings. Each string represents a classification of the entity (either a client or a subject) and MUST adhere to the syntax defined below.
 
-Multiple values MAY be included in a single Claim if the entity fits into more than one category. The order of values is insignificant, and there is no implicit hierarchy or relationship between the values unless defined elsewhere. When multiple Entity Profiles are present, they aren't additive or cumulative; each value is interpreted independently. When including multiple values, the Entity Profile combinations SHOULD be semantically meaningful and validated against expected usage patterns. Profiles with conflicting semantics (e.g., `user` and `service`) SHOULD be rejected unless a clear operational justification exists (e.g., `user` and `ai_agent` to indicate a digital employee).
+Multiple values MAY be included if the entity fits into more than one category. The order of values is insignificant, and there is no implicit hierarchy or relationship between the values. When multiple Entity Profiles are present, each value is interpreted independently. When including multiple values, the Entity Profile combinations SHOULD be semantically meaningful and validated against expected usage patterns. Conflicting profiles (e.g., `user service`) SHOULD be avoided unless a clear operational justification exists (e.g., `user ai_agent` to indicate an AI agent acting as a digital employee).
 
 ~~~abnf
 entity-profile = profile-token * ( SP profile-token )
@@ -162,7 +166,7 @@ All profile values MUST either:
 - Be registered in the OAuth Entity Profiles IANA registry (see [](#oauth-entity-profiles-registry)), or
 - Be privately defined (see [](#private-or-custom-entity-profiles)).
 
-While processing these values, Authorization Servers and Resource Servers MUST NOT assume any implicit relationships or hierarchies between the Entity Profiles unless explicitly agreed upon by the Authorization Server and the Resource Server or is defined in a specification.
+When processing these values, Authorization Servers and Resource Servers MUST NOT assume any implicit relationships or hierarchies between the Entity Profiles unless explicitly agreed upon by the Authorization Server and the Resource Server or if defined in a different specification.
 
 For example, a token might include the Entity Profiles `ai_agent acme_verified_robot`, where `acme_verified_robot` is a vendor-defined profile used to identify industrial automation clients from ACME Corp. These two profiles are independent — the presence of both does not imply that one is a subtype of the other, nor that they share privilege or trust levels. Treating `acme_verified_robot` as a subclass of `ai_agent`, or vice versa, could result in incorrect access decisions.
 
@@ -217,9 +221,9 @@ If an Authorization Server supports Dynamic Client Registration as defined in {{
 "client_profile":
 : OPTIONAL. The Entity Profile of the client. This value MAY be included in the client's registration request and, if present, SHOULD match the client's actual Entity Profile. If omitted, the Authorization Server MAY assign a default Entity Profile based on its policies or the client's other metadata.
 
-If the provided `client_profile` does not match the server's policy or fails the server's validation & verification checks, the Authorization Server MUST reject the registration request with an `invalid_client_metadata` error. The verification mechanisms for the `client_profile` value are out of scope for this specification, but it is recommended that Authorization Servers implement appropriate checks based on their security policies and operational context. They may also employ verification strategies like checking against known registries, validating against trusted sources, admin approval, metadata inference, out-of-band attestation by an accountable party etc.
+If the provided `client_profile` does not match the server's policy or fails the server's validation and verification checks, the Authorization Server MUST reject the registration request with an `invalid_client_metadata` error. The verification mechanisms for the `client_profile` value are out of scope for this specification, but it is recommended that Authorization Servers implement appropriate checks based on their security policies and operational context. They may also employ verification strategies like checking against known registries, validating against trusted sources, admin approval, metadata inference, out-of-band attestation by an accountable party etc.
 
-Authorization Servers MAY choose to ignore all or some of the provided Entity Profile values during registration, depending on their policies and other client metadata. Authorization Servers MAY also choose to assign additional Entity Profiles that aren't requested by the client based on their policies.
+Authorization Servers MAY choose to ignore all or some of the provided Entity Profile values during registration, depending on their policies and other client metadata. Authorization Servers MAY also choose to assign additional Entity Profiles that are not requested by the client based on their policies.
 
 Below is an example of how this metadata parameter might be included in a Dynamic Client Registration request. Other standard parameters are omitted for brevity:
 
@@ -263,7 +267,7 @@ Clients implementing this specification:
 - MUST use registered or private Entity Profiles
 - MUST NOT attempt to register with Entity Profiles that do not match their actual nature
 
-In environments where clients are manually registered or configured (e.g., enterprise deployments), the client_profile provided MUST accurately represent the nature of the client. The value MUST be a registered Entity Profile or follow the naming conventions for private Entity Profiles.
+In environments where clients are manually registered or configured (e.g., enterprise deployments), `client_profile` provided MUST accurately represent the nature of the client. The value MUST be a registered Entity Profile or follow the naming conventions for private Entity Profiles.
 
 Clients are incentivized to declare accurate `client_profile` values because authorization and access policies rely on them. Misrepresenting profiles may cause stricter enforcement, failed authorizations, or rejection due to incompatible policy constraints. Moreover, Authorization Servers and Resource Servers should monitor client behavior to ensure consistency with the declared profile, with deviations potentially resulting in penalties or revocation of access.
 
@@ -335,8 +339,8 @@ Authorization Servers MAY:
 
 Resource Servers handling tokens with Entity Profile Claims:
 
-- SHOULD use `sub_profile` and `client_profile` values to inform access control decisions and apply appropriate policies.
-- SHOULD apply conservative or default-deny policies when processing unrecognized Entity Profile values, when Entity Profile values are missing, or when the semantics of the Entity Profile are not known.
+- SHOULD use `sub_profile` and `client_profile` Claims to inform access control decisions and apply appropriate policies.
+- SHOULD apply conservative or default-deny policies when processing unrecognized Entity Profile Claims, when Entity Profile values are missing, or when the semantics of the Entity Profile are not known.
 - MAY log Entity Profile information for auditing, monitoring, and anomaly detection purposes.
 - MUST NOT interpret or infer additional meaning beyond the profile's definition.
 
@@ -350,37 +354,37 @@ These messages are intended for human end-users or developers and are not standa
 
 When multiple Entity Profiles are present, authorization policies associated with each should be evaluated in combination, with the most restrictive outcome prevailing. Implementers should avoid writing Entity Profile checks that override previous decisions imperatively, as this can lead to inconsistent behavior.
 
-Here is a non-normative pseudo-code example of these values can be used for enforcing authorization policies at a Resource Server:
+Here is a non-normative pseudo-code example of how these values can be used for enforcing authorization policies at a Resource Server:
 
 ~~~python
 client_profiles = set(token.get("client_profile", "").split(" "))
 sub_profiles = set(token.get("sub_profile", "").split(" "))
 
 # Define applicable policies
-policies = []
+policies_to_apply = []
 
 if "service" in client_profiles:
     # Add service-specific policies
-    policies.append(apply_service_policy)
+    policies_to_apply.append(apply_service_policy)
 
 if "ai_agent" in sub_profiles:
     # Add AI agent-specific policies
-    policies.append(apply_ai_agent_policy)
+    policies_to_apply.append(apply_ai_agent_policy)
 
 if "user" in sub_profiles:
     # Add user-specific policies
-    policies.append(apply_user_policy)
+    policies_to_apply.append(apply_user_policy)
 
 # Evaluate combined policies (e.g., intersection of permissions or most restrictive)
-final_decision = evaluate_combined_policies(policies, mode="most_restrictive")
+final_decision = evaluate_combined_policies(policies_to_apply, mode="most_restrictive")
 
 ~~~
 
 # Delegation Considerations
 
-Entity Profile attributes or Claims do not define or imply delegation chains. They serve to classify entities in an OAuth flow and to provide advisory metadata for the consumers of these attributes with additional context for better policy enforcement and decision making. Future specifications may define delegation semantics independently.
+Entity Profile Claims do not define or imply delegation relationships. They are intended solely to classify entities participating in an OAuth flow and to provide additional information that can assist relying parties in enforcing policies or making authorization decisions.
 
-Implementations MAY include Entity Profile Claims in delegated flows to provide additional context of the delegators and delegates.
+Implementations MAY include Entity Profile Claims in delegated contexts to convey additional information about the delegator or delegate. For example, in a token exchange flow {{RFC8693}}, the `act` Claim could include a `sub_profile` value to indicate the profile of the acting entity within the delegation chain.
 
 # Security Considerations
 
@@ -396,11 +400,11 @@ Implementations are encouraged to monitor client behavior for consistency with t
 
 ## Consistency and Semantics
 
-Authorization Servers, Resource Servers and Clients must interpret Entity Profile Claims consistently. To avoid misclassification or policy errors they should follow the definitions and semantics outlined in the specification, and not infer additional meanings or relationships beyond the defined Entity Profiles. This consistency is crucial for interoperability and security.
+Authorization Servers, Resource Servers, and Clients must interpret Entity Profile Claims consistently. To avoid misclassification or policy errors they should follow the definitions and semantics outlined in the specification, and not infer additional meanings or relationships beyond the defined Entity Profiles. This consistency is crucial for interoperability and security.
 
 ## Separation from Authentication and Assurance
 
-Entity Profile Claims are intended solely for classification and do not convey authentication strength or assurance. It is advised that these Entity Profile Claims not replace Claims such as `acr`. Authorization decisions should incorporate authentication context Claims alongside Entity Profiles to ensure robust access control.
+Entity Profile Claims are intended solely for classification and do not convey authentication strength or assurance. It is advised not to use these Entity Profile Claims as replacements for Claims such as `acr` (Authentication Context Class Reference {{OIDC}}). Authorization decisions should incorporate authentication context Claims alongside Entity Profiles to ensure robust access control.
 
 Also, different Entity Profiles often require different levels of authentication assurance. It is recommended that Authorization Servers define minimum assurance requirements per Entity Profile, express these through the `acr` Claim, and reject authorization requests that do not meet the required assurance level. This alignment helps prevent unauthorized access by weakly authenticated entities.
 
@@ -422,7 +426,7 @@ Entity Profile Claims can be misclassified or misinterpreted, leading to incorre
 
 ## Token Bloating
 
-Entity Profile Claims can increase the size of JWT access tokens or ID tokens, especially when multiple profiles are included. This can lead to performance issues, particularly in environments with limited bandwidth or storage. Implementers should consider the impact of token size on their systems and apply data minimization principles, including only including Entity Profile Claims when necessary.
+Entity Profile Claims can increase the size of JWT access tokens or ID tokens, especially when multiple profiles are included. This can lead to performance issues, particularly in environments with limited bandwidth or storage. Implementers should consider the impact of token size on their systems and apply data minimization principles, only including Entity Profile Claims when necessary.
 
 # Privacy Considerations
 
@@ -451,7 +455,7 @@ Entity Profile Claims may reveal sensitive information about system architecture
 
 This specification requests the creation of a new IANA registry titled "OAuth Entity Profiles Registry" within the "OAuth Parameters" group. This registry will contain the string identifiers used to represent the Entity Profiles described in this specification.
 
-NOTE: Private or vendor-specific Entity Profiles MAY use namespaced values do not require IANA registration.
+NOTE: Private or vendor-specific Entity Profiles may use namespaced values and do not require IANA registration.
 
 ### Registration Template
 
@@ -584,19 +588,22 @@ IANA is requested to register the following fields in the "OAuth Token Introspec
 
 # Example Usage in Various Flows and Use Cases
 
-Here are some non-normative examples of how Entity Profiles might be applied in different OAuth flows and use cases:
+The following non-normative examples illustrate how Entity Profiles might appear in various OAuth flows.
 
-| Flow / Use Case                                                 | Client Profile      | Subject Profile    |
-| --------------------------------------------------------------- | ------------------- | ------------------ |
-| Authorization Code Flow (Web App)                               | `web_app`           | `user`             |
-| Authorization Code Flow (Mobile App)                            | `native_app`        | `user`             |
-| Client Credentials Flow (S2S)                                   | `service`           | `service`          |
-| Device Authorization Flow (Smart TV app)                        | `device native_app` | `user`             |
-| Token Exchange (RFC 8693) OBO user                              | `service web_app`   | `user`             |
-| Resource Owner Password Credentials Flow (legacy)               | `web_app`           | `user`             |
-| S2S OBO Flows (e.g., Service Mesh)                              | `service`           | `service`          |
-| AI agents acting as itself (e.g., Workspace bots)               | `service ai_agent`  | `ai_agent service` |
-| AI agents acting on behalf of a user (e.g., personal assistant) | `ai_agent`          | `user`             |
+| Flow / Use Case                                                 | Client Profile        | Subject Profile    |
+| --------------------------------------------------------------- | --------------------- | ------------------ |
+| Authorization Code Flow (Web App)                               | `web_app`             | `user`             |
+| Authorization Code Flow (SPA)                                   | `browser_app`         | `user`             |
+| Authorization Code Flow (Mobile App)                            | `native_app`          | `user`             |
+| Client Credentials Flow (Backend Service)                       | `service`             | `service`          |
+| Device Authorization Flow (Smart TV app)                        | `native_app`          | `user`             |
+| IoT sensors reporting telemetry                                 | `device`              | `device`           |
+| A web app talking to a downstream API on behalf-of a user       | `service web_app`     | `user`             |
+| Resource Owner Password Credentials Flow (legacy)               | `web_app`             | `user`             |
+| S2S OBO Flows (e.g., Service Mesh)                              | `service`             | `service`          |
+| An AI  acting as itself (e.g., Workspace bots)                  | `service ai_agent`    | `ai_agent service` |
+| AI agents acting on behalf of a user (e.g., personal assistant) | `ai_agent`            | `user`             |
+| An AI agent running in a desktop app                            | `native_app ai_agent` | `user`             |
 
 # Document History
 

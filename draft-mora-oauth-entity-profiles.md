@@ -17,6 +17,8 @@ keyword:
  - "Subject Profile"
  - "Client Profile"
  - "AI Agent"
+ - "Actor Chain Profile"
+ - "Delegation"
 venue:
   group: "Web Authorization Protocol"
   type: "Working Group"
@@ -40,20 +42,23 @@ normative:
   RFC6749:
   RFC6750:
   RFC7519:
+  RFC7523:
   RFC7591:
   RFC7662:
   RFC8414:
   RFC8628:
+  RFC8693:
+  RFC9068:
   OIDC:
     title: "OpenID Connect Core 1.0"
     target: "https://openid.net/specs/openid-connect-core-1_0.html"
     date: "December 2023"
 informative:
-  RFC8693:
+  I-D.ietf-oauth-identity-chaining:
 
 --- abstract
 
-This specification introduces Entity Profiles as a mechanism to categorize OAuth 2.0 entities—clients and subjects—based on their operational context. Entity Profiles provide structured descriptors for the client initiating the OAuth flow and the subject represented in tokens. This document defines new JWT Claim names and metadata parameters for use in access tokens, ID tokens, token introspection responses, dynamic client registration, and Authorization Server metadata.
+This specification introduces Entity Profiles as a mechanism to categorize OAuth 2.0 entities—clients and subjects—based on their operational context. Entity Profiles provide structured descriptors for the client initiating the OAuth flow and the subject represented in tokens. This document defines new JWT Claim names and metadata parameters for use in access tokens, ID tokens, token introspection responses, dynamic client registration, and Authorization Server metadata. This specification also defines the Actor Chain Profile, which extends Entity Profile vocabulary into delegation chains by requiring each node in the `act` Claim {{RFC8693}} to carry a `sub_profile` Claim, enabling deterministic processing of delegated access across JWT assertion grants {{RFC7523}} and JWT access tokens {{RFC9068}}.
 
 --- middle
 
@@ -67,6 +72,8 @@ This specification introduces two new Claims:
 - `sub_profile`: Describes the entity represented by the subject (`sub`) Claim in an issued token (e.g., user, service, AI agent).
 
 This specification establishes a registry for OAuth Entity Profiles and defines an initial set of Entity Profile values. This document also defines how the Entity Profiles can be used in access tokens, ID tokens, token introspection responses, dynamic client registration, and Authorization Server metadata.
+
+This specification further defines the Actor Chain Profile, which applies Entity Profile vocabulary to delegation chains. When one entity acts on behalf of another, the `act` Claim {{RFC8693}} is used to represent the acting entity, and each node in the chain carries a `sub_profile` Claim to identify its Entity Profile. This profile applies uniformly to JWT assertion grants {{RFC7523}} and JWT access tokens {{RFC9068}}, making delegation chains machine-processable and enabling consistent policy enforcement without relying on issuer-specific conventions.
 
 ## Conventions and Definitions
 
@@ -87,6 +94,9 @@ This document uses the terms "User", "Resource Owner", "Client", "Authorization 
 - **Subject Profile**:
 : A descriptor for the entity represented by the token subject (e.g., user, AI agent, service account etc.).
 
+- **Actor Profile**:
+: A Subject Profile carried within an `act` Claim node {{RFC8693}}, identifying the Entity Profile of the acting entity at that step in a delegation chain.
+
 # Motivation and Use Cases
 
 As OAuth 2.0 continues to be used in increasingly diverse environments—including cloud-native architectures, zero-trust systems, IoT ecosystems, and AI-driven platforms—the nature of entities participating in OAuth flows has become more heterogeneous.
@@ -99,7 +109,15 @@ Current OAuth deployments lack a standardized way to represent and reason about 
 - **Future-Proofing OAuth Flows**: As AI agents and autonomous systems take on greater roles, profiles offer a way to signal and manage their participation explicitly.
 - **User Experience**: Customized interfaces and consent flows, such as enhanced disclosures and controls for human users and granular permissions for AI agents.
 
-By introducing a consistent way to describe the operational context of clients and subjects, this specification enhances the overall authorization decisions, policy enforcement, risk assessment, and audit capabilities in OAuth 2.0 and OpenID Connect deployments.
+Entity Profiles alone are insufficient when access is delegated across a chain of principals. In agentic and multi-service architectures, a single request may involve a human user whose authority is being exercised, one or more AI agents acting on that user's behalf, and backend services mediating across trust boundaries. Without a standard way to type each principal in the delegation chain, Resource Servers cannot make consistent, auditable authorization decisions across these flows.
+
+The Actor Chain Profile defined in this specification addresses this gap by requiring each node in the `act` Claim {{RFC8693}} to carry a `sub_profile` Claim. This extends Entity Profile vocabulary uniformly into JWT assertion grants {{RFC7523}} and JWT access tokens {{RFC9068}}, enabling the following additional capabilities:
+
+- **Delegated Access Control**: Resource Servers can evaluate the Entity Profile of every principal in the delegation chain, not just the immediate caller, enabling dual-principal and multi-hop authorization policies.
+- **Delegation Transparency**: The full chain of acting entities and their types is preserved in the token, supporting audit trails that reflect the complete delegation history.
+- **Cross-Domain Interoperability**: Each `act` node carries an `iss` Claim identifying the Authorization Server responsible for that actor's identity, allowing Resource Servers to apply domain-appropriate trust policies across organizational boundaries.
+
+By introducing a consistent way to describe the operational context of clients, subjects, and actors, this specification enhances authorization decisions, policy enforcement, risk assessment, and audit capabilities across both direct and delegated access in OAuth 2.0 and OpenID Connect deployments.
 
 
 # Entity Profiles
@@ -182,6 +200,8 @@ The `client_profile` (Client Profile) Claim indicates the Entity Profile(s) of t
 
 The `sub_profile` (Subject Profile) Claim indicates the Entity Profile(s) of the Subject represented by the `sub` (Subject) Claim in a JWT access token or ID token. If included, the value of this Claim MUST conform to the rules defined in [](#representation-in-token-claims-and-metadata). Use of this Claim is OPTIONAL.
 
+The `sub_profile` Claim also appears within `act` Claim nodes to identify the Entity Profile of the acting entity at each step in a delegation chain, as defined in [](#actor-chain-profile). The same syntax and registry requirements apply in that context.
+
 Below is a non-normative example illustrating how the new Entity Profile Claims can appear within a JWT access token. Other standard Claims are omitted for brevity:
 
 ~~~json
@@ -198,9 +218,9 @@ Below is a non-normative example illustrating how the new Entity Profile Claims 
 If an Authorization Server supports publishing metadata as defined in {{RFC8414}} and also implements the mechanisms defined in this specification, it SHOULD advertise its support for the mechanisms defined in this specification using the following metadata parameter in its Authorization Server Metadata document:
 
 "entity_profiles_supported":
-: OPTIONAL. JSON object containing two JSON arrays: `client` and `subject`. Each array lists the Entity Profiles supported by the Authorization Server. The `client` array SHOULD include all Entity Profiles that the server can issue in `client_profile` Claims, and the `subject` array SHOULD include all Entity Profiles that the server can issue in `sub_profile` Claims. Authorization Servers MAY omit some supported profiles from this metadata if desired.
+: OPTIONAL. JSON object containing up to three JSON arrays: `client`, `subject`, and `actor`. The `client` array SHOULD include all Entity Profiles that the server can issue in `client_profile` Claims. The `subject` array SHOULD include all Entity Profiles that the server can issue in `sub_profile` Claims. The `actor` array SHOULD include all Entity Profiles that the server supports within `sub_profile` Claims in `act` nodes, as defined in [](#actor-chain-profile); its presence indicates that the Authorization Server supports the Actor Chain Profile. Authorization Servers MAY omit some supported profiles from this metadata if desired.
 
-Clients can use this metadata to determine which Entity Profiles the Authorization Server recognizes and to understand how their own Entity Profiles might be interpreted or classified.
+Clients can use this metadata to determine which Entity Profiles the Authorization Server recognizes, to understand how their own Entity Profiles might be interpreted or classified, and to determine whether the Actor Chain Profile is supported for delegated access scenarios.
 
 Below is an example of how this metadata parameter might be included in the Authorization Server Metadata document. Other standard parameters are omitted for brevity:
 
@@ -209,7 +229,8 @@ Below is an example of how this metadata parameter might be included in the Auth
   "entity_profiles_supported":
   {
     "client": ["native_app", "web_app", "browser_app", "service", "ai_agent"],
-    "subject": ["user", "device", "service", "ai_agent"]
+    "subject": ["user", "device", "service", "ai_agent"],
+    "actor": ["service", "ai_agent"]
   }
 }
 ~~~
@@ -245,7 +266,10 @@ If an Authorization Server supports Token Introspection as defined in {{RFC7662}
 "client_profile":
 : OPTIONAL. The Entity Profile of the client identified by the `client_id` Claim in the access token.
 
-The following is a non-normative example of how these parameters might appear in a token introspection response. Other standard parameters are omitted for brevity:
+"act":
+: OPTIONAL. When the token represents a delegated access context, the `act` Claim as defined in {{RFC8693}} SHOULD be included in the introspection response to convey the delegation chain. Each `act` node MUST include a `sub_profile` Claim when the Authorization Server has assigned one. This enables Resource Servers that use introspection instead of local JWT validation to apply the same dual-principal processing model defined in [](#actor-chain-processing-by-resource-servers).
+
+The following is a non-normative example of how these parameters might appear in a token introspection response for a delegated access scenario. Other standard parameters are omitted for brevity:
 
 ~~~json
 {
@@ -253,7 +277,11 @@ The following is a non-normative example of how these parameters might appear in
   "sub": "user123",
   "sub_profile": "user",
   "client_id": "client456",
-  "client_profile": "native_app"
+  "client_profile": "native_app",
+  "act": {
+    "sub": "agent-7f3c",
+    "sub_profile": "ai_agent"
+  }
 }
 ~~~
 
@@ -270,6 +298,15 @@ Clients implementing this specification:
 In environments where clients are manually registered or configured (e.g., enterprise deployments), `client_profile` provided MUST accurately represent the nature of the client. The value MUST be a registered Entity Profile or follow the naming conventions for private Entity Profiles.
 
 Clients are incentivized to declare accurate `client_profile` values because authorization and access policies rely on them. Misrepresenting profiles may cause stricter enforcement, failed authorizations, or rejection due to incompatible policy constraints. Moreover, Authorization Servers and Resource Servers should monitor client behavior to ensure consistency with the declared profile, with deviations potentially resulting in penalties or revocation of access.
+
+## Constructing JWT Assertion Grants with Actor Chains
+
+Clients that present JWT assertion grants ({{RFC7523}}) containing an `act` Claim, in accordance with the Actor Chain Profile defined in [](#actor-chain-profile):
+
+- MUST include a `sub_profile` Claim in each `act` node they construct, conforming to the rules defined in [](#representation-in-token-claims-and-metadata).
+- MUST NOT fabricate or alter `sub_profile` values in `act` nodes to misrepresent the nature of an acting entity.
+- SHOULD include the `iss` Claim in each `act` node to identify the Authorization Server responsible for that actor's identity, particularly in cross-domain scenarios.
+- MUST only assert delegation relationships that reflect actual authorization events; presenting a fabricated chain to obtain elevated access is a security violation.
 
 # Authorization Server Behavior
 
@@ -295,6 +332,8 @@ The Authorization Server MAY determine the `sub_profile` value based on:
 
 The client’s declared profile or request parameters MUST NOT directly influence or determine the value of `sub_profile` to prevent manipulation or unauthorized elevation of subject classification.
 
+When processing JWT assertion grants ({{RFC7523}}) that carry an `act` Claim, the Authorization Server SHOULD determine the `sub_profile` value for each `act` node using the same principles applied to the token subject: based on the identity of the acting entity as established by the assertion’s issuer, preconfigured mappings, or out-of-band registration. The `sub_profile` values asserted within incoming `act` nodes SHOULD be validated against the Authorization Server’s knowledge of those entities and MUST NOT be accepted solely on the basis of self-assertion from the presenting client.
+
 ## JWT Token Issuance
 
 Authorization Servers implementing this specification:
@@ -312,6 +351,7 @@ This specification does not prescribe how clients request Entity Profile Claims.
 Authorization Servers implementing this specification:
 
 - SHOULD include `sub_profile` and `client_profile` parameters in token introspection responses. If included, Authorization Servers MUST ensure that the values of these parameters conform to the rules defined in [](#representation-in-token-claims-and-metadata).
+- SHOULD include the `act` Claim in introspection responses when the token represents a delegated access context, with each `act` node including a `sub_profile` Claim as defined in [](#actor-chain-profile).
 
 ## Validation Requirements
 
@@ -320,6 +360,7 @@ Authorization Servers:
 1. MUST verify that Entity Profile values are either registered in the OAuth Entity Profiles registry or follow proper namespaced private conventions per the rules defined in [](#representation-in-token-claims-and-metadata).
 2. SHOULD ensure that Entity Profile assignments are trustworthy and not based solely on unverified self-assertion. The mechanisms for these verifications are out of scope for this specification, but it is recommended that Authorization Servers implement appropriate checks based on their security policies and operational context.
 3. MUST enforce authentication assurance and policy requirements appropriate to the Entity Profile.
+4. MUST validate `sub_profile` values within all `act` nodes in incoming JWT assertion grants against the same registry and naming rules, and MUST NOT propagate `act` node `sub_profile` values into issued tokens without verification.
 
 If validation fails during:
 
@@ -345,6 +386,8 @@ Resource Servers handling tokens with Entity Profile Claims:
 - MUST NOT interpret or infer additional meaning beyond the profile's definition.
 
 This specification does not prescribe specific behaviors or policies for Resource Servers based on Entity Profiles. However, it encourages Resource Servers to use these Claims to strengthen security, enforce fine-grained policies, and improve user experience.
+
+When a token contains an `act` Claim, Resource Servers SHOULD additionally apply the dual-principal processing model defined in [](#actor-chain-processing-by-resource-servers), which covers how to evaluate Entity Profiles across the full delegation chain.
 
 When rejecting a request due to invalid, missing, or unsupported Entity Profile Claims, Resource Servers SHOULD provide informative error responses to assist with diagnostics and troubleshooting. These responses SHOULD use existing OAuth 2.0 and HTTP mechanisms, such as the `WWW-Authenticate` {{RFC6750}} header or the `error_description` field {{RFC6749}} in the response body, to convey additional context.
 
@@ -375,6 +418,18 @@ if "user" in sub_profiles:
     # Add user-specific policies
     policies_to_apply.append(apply_user_policy)
 
+# Evaluate actor chain if delegation is present
+act = token.get("act")
+while act:
+    actor_profiles = set(act.get("sub_profile", "").split(" "))
+    actor_iss = act.get("iss")
+
+    if "ai_agent" in actor_profiles:
+        # Add actor-specific policies, scoped to the actor's domain if present
+        policies_to_apply.append(apply_actor_policy(actor_iss, actor_profiles))
+
+    act = act.get("act")  # traverse the chain
+
 # Evaluate combined policies (e.g., intersection of permissions or most restrictive)
 final_decision = evaluate_combined_policies(policies_to_apply, mode="most_restrictive")
 
@@ -382,9 +437,187 @@ final_decision = evaluate_combined_policies(policies_to_apply, mode="most_restri
 
 # Delegation Considerations
 
-Entity Profile Claims do not define or imply delegation relationships. They are intended solely to classify entities participating in an OAuth flow and to provide additional information that can assist relying parties in enforcing policies or making authorization decisions.
+Entity Profile Claims classify entities participating in an OAuth flow, but do not by themselves define or convey delegation relationships. Delegation structure is represented through the `act` Claim {{RFC8693}}, not through Entity Profile values alone.
 
-Implementations MAY include Entity Profile Claims in delegated contexts to convey additional information about the delegator or delegate. For example, in a token exchange flow {{RFC8693}}, the `act` Claim could include a `sub_profile` value to indicate the profile of the acting entity within the delegation chain.
+This specification defines the Actor Chain Profile (see [](#actor-chain-profile)), which combines `act` with `sub_profile` to produce typed, machine-processable delegation chains. Entity Profile Claims used within `act` nodes retain their classification semantics; it is the `act` structure itself that represents the delegation relationship.
+
+# Actor Chain Profile
+
+This section defines an interoperable profile for representing delegation chains using the `act` Claim {{RFC8693}} in combination with the Entity Profile Claims defined in this specification. This profile applies uniformly to JWT assertion grants {{RFC7523}} and JWT access tokens {{RFC9068}}.
+
+## Overview
+
+When an entity acts on behalf of another (for example, an AI agent acting on behalf of a human user), the `act` Claim MUST be used to represent the acting entity. This makes delegation chains machine-processable without relying on issuer-specific conventions, and enables authorization servers and resource servers to evaluate both the authority being exercised and the entity currently performing actions.
+
+The `act` Claim MAY be nested to represent multi-hop delegation histories. The outermost `act` object represents the entity most recently granted delegation authority, and deeper nesting represents earlier links in the chain. Each node in the chain MUST carry a `sub_profile` Claim identifying its Entity Profile.
+
+## `sub_profile` in Actor Nodes
+
+When the `act` Claim is present in a JWT, each `act` object MUST include:
+
+- `sub`: The identifier of the acting entity, as defined in {{RFC8693}}.
+- `sub_profile`: The Entity Profile of the acting entity, conforming to the rules defined in [](#representation-in-token-claims-and-metadata).
+
+The `sub_profile` Claim within an `act` object is subject to the same syntax and registry requirements as `sub_profile` at the top level of a JWT. Authorization Servers MUST validate `sub_profile` values within all `act` nodes during token issuance. Resource Servers MUST validate `sub_profile` values within all `act` nodes when evaluating access.
+
+## Actor Chain Validation by Authorization Servers {#actor-as-behavior}
+
+### Processing JWT Assertion Grants
+
+When processing JWT assertion grants ({{RFC7523}}) that contain an `act` Claim, Authorization Servers:
+
+- MUST validate that each `act` node contains a `sub` Claim and a `sub_profile` Claim conforming to the rules in [](#representation-in-token-claims-and-metadata).
+- MUST NOT strip or alter `act` Claim chains from validated assertion grants unless required by security policy.
+- SHOULD propagate the full `act` chain into issued access tokens to preserve delegation transparency.
+- MAY truncate the delegation chain for privacy or policy reasons, provided the outermost `act` node is always preserved.
+
+### Issuing JWT Access Tokens
+
+When issuing JWT access tokens ({{RFC9068}}) in delegated contexts, Authorization Servers:
+
+- MUST include the `act` Claim when delegation is present and a `sub` Claim alone would be insufficient to represent the delegation relationship.
+- MUST ensure each `act` node includes a `sub_profile` Claim.
+- MUST NOT fabricate or modify `act` chain entries; delegation relationships MUST reflect actual authorization events.
+
+## Actor Chain Processing by Resource Servers {#resource-server-behavior-1}
+
+Resource Servers handling tokens that contain an `act` Claim SHOULD apply the following processing model when evaluating access:
+
+1. **`act` present**: Evaluate dual-principal policy. The `sub` Claim represents the principal whose authority is being exercised; the `sub` within the outermost `act` object represents the entity currently acting. Both principals and their respective Entity Profiles SHOULD be authorized for the requested access.
+
+2. **No `act`, `sub_profile` is `user`**: The token represents direct user-context access with no delegation. Apply user-context access policies.
+
+3. **No `act`, non-`user` `sub_profile`**: The token represents non-delegated workload or agent self-access. Apply the policy appropriate to the declared `sub_profile`.
+
+Resource Servers MUST NOT grant access based solely on a `sub_profile` value within an `act` node without also validating the outer `sub`, the overall token signature, and the token's scope and audience.
+
+When the full delegation chain is present, Resource Servers SHOULD evaluate all intermediate `act` nodes and SHOULD apply the most restrictive policy across all principals in the chain.
+
+## Non-Normative Examples
+
+### Direct User Access
+
+The following example shows a JWT access token for a user accessing a resource directly, with no delegation:
+
+~~~json
+{
+  "iss": "https://as.example.com",
+  "sub": "user-alice",
+  "sub_profile": "user",
+  "client_id": "web-app-123",
+  "client_profile": "web_app",
+  "scope": "payments:read"
+}
+~~~
+
+A Resource Server processing this token applies case 2 of the processing model: direct user-context access, no delegation.
+
+### AI Agent Acting on Behalf of a User
+
+The following example shows a JWT access token where an AI agent acts on behalf of a human user. The `act` Claim identifies the agent and its Entity Profile, while `sub` identifies the user whose authority is being exercised:
+
+~~~json
+{
+  "iss": "https://as.example.com",
+  "sub": "user-alice",
+  "sub_profile": "user",
+  "act": {
+    "sub": "agent-7f3c",
+    "sub_profile": "ai_agent"
+  },
+  "client_id": "agent-client-789",
+  "client_profile": "ai_agent",
+  "scope": "payments:write"
+}
+~~~
+
+A Resource Server evaluating this token MUST apply case 1 of the processing model: dual-principal policy for both `user-alice` (the principal being acted for) and `agent-7f3c` (the acting entity). Access MUST be denied if either principal lacks authorization.
+
+### Cross-Domain Delegation Chain
+
+In cross-domain delegation, each actor in the chain may be administered by a different Authorization Server. The `iss` Claim within an `act` node, as defined in {{RFC8693}}, identifies the Authorization Server responsible for the actor's identity at that hop. This allows a Resource Server to distinguish actors from different security domains and apply domain-specific trust policies to each principal independently.
+
+The following example shows a nested delegation chain spanning three domains. A planner agent from `as.planner.example` initiated delegation to a domain bridge agent from `as.partner.example`, which in turn acts on behalf of a user homed at `as.example.com`. The token is issued by `as.example.com`, which asserts the full chain:
+
+~~~json
+{
+  "iss": "https://as.example.com",
+  "sub": "user-alice",
+  "sub_profile": "user",
+  "act": {
+    "iss": "https://as.partner.example",
+    "sub": "domain-bridge-agent",
+    "sub_profile": "ai_agent",
+    "act": {
+      "iss": "https://as.planner.example",
+      "sub": "alice-planner-agent",
+      "sub_profile": "ai_agent"
+    }
+  },
+  "scope": "calendar:write"
+}
+~~~
+
+The top-level `iss` identifies the Authorization Server that issued and asserts the token as a whole. The `iss` within each `act` node identifies the Authorization Server that administers that actor's identity. It does not re-issue the token, but provides the namespace needed to unambiguously resolve the actor's `sub` across domains.
+
+The innermost `act` node (`alice-planner-agent`, homed at `as.planner.example`) represents the entity that initiated the delegation chain. The outer `act` node (`domain-bridge-agent`, homed at `as.partner.example`) represents the next hop. Resource Servers SHOULD evaluate the full chain, applying trust appropriate to each actor's `iss`, and SHOULD apply the most restrictive policy across all principals present.
+
+### Token Exchange Flowing Actor Chain from Assertion to Access Token
+
+The following example illustrates how an Actor Chain Profile-compliant JWT assertion grant flows through a token exchange into an issued JWT access token, following the identity chaining pattern described in {{I-D.ietf-oauth-identity-chaining}}.
+
+In this scenario, a planner agent (`alice-planner-agent`) at `as.planner.example` has obtained a JWT asserting that it is acting on behalf of `user-alice`. It presents this as a JWT bearer assertion grant ({{RFC7523}}) to `as.example.com` via a token exchange ({{RFC8693}}) request in order to obtain an access token scoped to a downstream API.
+
+The JWT assertion presented by the agent contains the delegation chain:
+
+~~~json
+{
+  "iss": "https://as.planner.example",
+  "sub": "user-alice",
+  "sub_profile": "user",
+  "act": {
+    "sub": "alice-planner-agent",
+    "sub_profile": "ai_agent"
+  },
+  "aud": "https://as.example.com",
+  "exp": 1735689600
+}
+~~~
+
+The agent presents this assertion to the Authorization Server using a token exchange request:
+
+~~~
+POST /token HTTP/1.1
+Host: as.example.com
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Atoken-exchange
+&subject_token=<jwt-assertion>
+&subject_token_type=urn%3Aietf%3Aparams%3Aoauth%3Atoken-type%3Ajwt
+&requested_token_type=urn%3Aietf%3Aparams%3Aoauth%3Atoken-type%3Aaccess_token
+&scope=calendar%3Awrite
+&audience=https%3A%2F%2Fapi.example.com
+~~~
+
+The Authorization Server validates the assertion, verifies the `sub_profile` value in the `act` node, and issues a JWT access token that preserves the Actor Chain:
+
+~~~json
+{
+  "iss": "https://as.example.com",
+  "sub": "user-alice",
+  "sub_profile": "user",
+  "act": {
+    "iss": "https://as.planner.example",
+    "sub": "alice-planner-agent",
+    "sub_profile": "ai_agent"
+  },
+  "aud": "https://api.example.com",
+  "scope": "calendar:write",
+  "exp": 1735693200
+}
+~~~
+
+The issued access token preserves the full delegation relationship from the assertion. The `iss` added to the `act` node in the access token identifies the Authorization Server that administered the agent's identity in the source domain, allowing the Resource Server at `api.example.com` to apply appropriate trust policy for that actor independently from the token issuer.
 
 # Security Considerations
 
@@ -428,6 +661,18 @@ Entity Profile Claims can be misclassified or misinterpreted, leading to incorre
 
 Entity Profile Claims can increase the size of JWT access tokens or ID tokens, especially when multiple profiles are included. This can lead to performance issues, particularly in environments with limited bandwidth or storage. Implementers should consider the impact of token size on their systems and apply data minimization principles, only including Entity Profile Claims when necessary.
 
+## Actor Chain Security
+
+The Actor Chain Profile introduces additional attack surface that implementations should address.
+
+**Chain Truncation**: A malicious or compromised intermediary may strip inner `act` nodes from a delegation chain before presenting an assertion, concealing the true origin of a delegation. Authorization Servers SHOULD detect unexpected reduction in chain depth when validating assertion grants from known sources and SHOULD reject assertions where chain truncation is inconsistent with established trust relationships.
+
+**Actor `iss` Spoofing**: An attacker may include a fabricated `iss` value in an `act` node to impersonate a trusted domain. Authorization Servers MUST NOT trust `iss` values in `act` nodes solely on the basis of the claim itself. The identity of each actor SHOULD be verified against a trusted source, such as a federation registry or pre-established trust anchor, before the `sub_profile` value is accepted and propagated.
+
+**Delegation Chain Forgery**: A client may present a fabricated `act` chain to assert delegation relationships that never occurred. Authorization Servers MUST validate that asserted delegation relationships are consistent with actual authorization events recorded by the system. Accepting unverifiable chains may allow privilege escalation by impersonating a high-trust principal in the `sub` position.
+
+**Unbounded Chain Depth**: Deeply nested `act` chains may be used to exhaust processing resources or obscure the true actor. Implementations SHOULD impose a maximum chain depth appropriate to their deployment context and SHOULD reject assertion grants or access tokens that exceed it.
+
 # Privacy Considerations
 
 Entity Profile Claims can reveal sensitive information about clients, users, or system architecture. When exposed improperly, they may increase risks related to fingerprinting, profiling, or data leakage. Implementers should evaluate the privacy impact of using these Claims and apply protective measures accordingly.
@@ -449,6 +694,12 @@ Implementers should apply data minimization principles when including Entity Pro
 
 Entity Profile Claims may reveal sensitive information about system architecture or user categories. It is advised to carefully consider the exposure of these Claims in tokens accessible to untrusted parties. Limiting or anonymizing Entity Profile information can reduce the risk of unintended data disclosure.
 
+## Delegation Chain Exposure
+
+Actor chains encoded in `act` Claims preserve the full delegation history in the token, which may reveal sensitive information about organizational structure, internal service topology, or user behavior across domains. Each `act` node discloses a principal identifier, its Entity Profile, and optionally the Authorization Server that administers it. Resource Servers and intermediaries that log or forward tokens containing `act` Claims SHOULD treat this information with the same care as other identity data.
+
+Implementers SHOULD consider whether the full chain needs to be present in tokens presented to Resource Servers, or whether a truncated representation preserving only the outermost `act` node is sufficient for authorization purposes while reducing exposure of intermediate principals. Any truncation MUST be performed by the issuing Authorization Server, not by the presenting client, to preserve chain integrity.
+
 # IANA Considerations
 
 ## OAuth Entity Profiles Registry
@@ -463,7 +714,7 @@ Each registry entry MUST include:
 
 - Entity Profile Name: A case-insensitive ASCII string representing the entity type (e.g., "user").
 - Entity Profile Description: Brief human-readable description of the entity type.
-- Usage location: The location(s) where the Entity Profile can be used. The possible locations are "Subject Profile" and "Client Profile".
+- Usage location: The location(s) where the Entity Profile can be used. The possible locations are "Subject Profile", "Client Profile", and "Actor Profile".
 - Change Controller: The party responsible for the definition (e.g., IESG).
 - Specification Document: A stable URL or RFC that defines the semantics and use of the value.
 
@@ -513,7 +764,7 @@ Each registry entry MUST include:
 
 - Entity Profile Name: "service"
 - Entity Profile Description: Non-human backend service or microservice.
-- Usage Location: "Client Profile", "Subject Profile"
+- Usage Location: "Client Profile", "Subject Profile", "Actor Profile"
 - Change Controller: IESG
 - Specification Document: [](#standardized-entity-profiles) of this document.
 
@@ -521,7 +772,7 @@ Each registry entry MUST include:
 
 - Entity Profile Name: "ai_agent"
 - Entity Profile Description: Autonomous or semi-autonomous AI-based entity.
-- Usage Location: "Client Profile", "Subject Profile"
+- Usage Location: "Client Profile", "Subject Profile", "Actor Profile"
 - Change Controller: IESG
 - Specification Document: [](#standardized-entity-profiles) of this document.
 
@@ -551,7 +802,7 @@ IANA is requested to register the following fields in the "OAuth Authorization S
 ### `entity_profiles_supported`
 
 - Metadata Name: entity_profiles_supported
-- Metadata Description: JSON object containing two JSON arrays: `client` and `subject`, each listing the Entity Profiles supported.
+- Metadata Description: JSON object containing up to three JSON arrays (`client`, `subject`, and `actor`) listing the Entity Profiles supported for client classification, subject classification, and actor chain nodes respectively.
 - Change Controller: IESG
 - Specification Document: [](#authorization-server-metadata) of this document.
 
@@ -584,26 +835,34 @@ IANA is requested to register the following fields in the "OAuth Token Introspec
 - Change Controller: IESG
 - Specification Document: [](#token-introspection-response-parameters) of this document.
 
+### `act`
+
+- Name: "act"
+- Description: Actor Claim conveying the delegation chain; each node includes a `sub_profile` Claim identifying the Entity Profile of the acting entity
+- Change Controller: IESG
+- Specification Document: [](#token-introspection-response-parameters) of this document.
+
 --- back
 
 # Example Usage in Various Flows and Use Cases
 
 The following non-normative examples illustrate how Entity Profiles might appear in various OAuth flows.
 
-| Flow / Use Case                                                 | Client Profile        | Subject Profile    |
-| --------------------------------------------------------------- | --------------------- | ------------------ |
-| Authorization Code Flow (Web App)                               | `web_app`             | `user`             |
-| Authorization Code Flow (SPA)                                   | `browser_app`         | `user`             |
-| Authorization Code Flow (Mobile App)                            | `native_app`          | `user`             |
-| Client Credentials Flow (Backend Service)                       | `service`             | `service`          |
-| Device Authorization Flow (Smart TV app)                        | `native_app`          | `user`             |
-| IoT sensors reporting telemetry                                 | `device`              | `device`           |
-| A web app talking to a downstream API on behalf-of a user       | `service web_app`     | `user`             |
-| Resource Owner Password Credentials Flow (legacy)               | `web_app`             | `user`             |
-| S2S OBO Flows (e.g., Service Mesh)                              | `service`             | `service`          |
-| An AI  acting as itself (e.g., Workspace bots)                  | `service ai_agent`    | `ai_agent service` |
-| AI agents acting on behalf of a user (e.g., personal assistant) | `ai_agent`            | `user`             |
-| An AI agent running in a desktop app                            | `native_app ai_agent` | `user`             |
+| Flow / Use Case                                                 | Client Profile        | Subject Profile    | Actor (`act.sub_profile`)   |
+| --------------------------------------------------------------- | --------------------- | ------------------ | --------------------------- |
+| Authorization Code Flow (Web App)                               | `web_app`             | `user`             | N/A                         |
+| Authorization Code Flow (SPA)                                   | `browser_app`         | `user`             | N/A                         |
+| Authorization Code Flow (Mobile App)                            | `native_app`          | `user`             | N/A                         |
+| Client Credentials Flow (Backend Service)                       | `service`             | `service`          | N/A                         |
+| Device Authorization Flow (Smart TV app)                        | `native_app`          | `user`             | N/A                         |
+| IoT sensors reporting telemetry                                 | `device`              | `device`           | N/A                         |
+| A web app talking to a downstream API on behalf-of a user       | `service web_app`     | `user`             | N/A                         |
+| Resource Owner Password Credentials Flow (legacy)               | `web_app`             | `user`             | N/A                         |
+| S2S OBO Flows (e.g., Service Mesh)                              | `service`             | `service`          | N/A                         |
+| An AI acting as itself (e.g., Workspace bots)                   | `service ai_agent`    | `ai_agent service` | N/A                         |
+| AI agent acting on behalf of a user (e.g., personal assistant)  | `ai_agent`            | `user`             | `ai_agent`                  |
+| An AI agent running in a desktop app                            | `native_app ai_agent` | `user`             | `ai_agent`                  |
+| Multi-hop agent delegation (planner → bridge → user)            | `ai_agent`            | `user`             | `ai_agent` (nested)         |
 
 # Document History
 

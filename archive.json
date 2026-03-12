@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-03-10T00:27:36.476354+00:00",
+  "timestamp": "2026-03-12T00:26:15.811771+00:00",
   "repo": "Sreyanth/draft-mora-oauth-entity-profiles",
   "labels": [
     {
@@ -50,5 +50,32 @@
     }
   ],
   "issues": [],
-  "pulls": []
+  "pulls": [
+    {
+      "number": 1,
+      "id": "PR_kwDOQACHtc7JRqVv",
+      "title": "Actor Chain Profile Support",
+      "url": "https://github.com/Sreyanth/draft-mora-oauth-entity-profiles/pull/1",
+      "state": "OPEN",
+      "author": "mcguinness",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "I think there in an opportunity to address a large interop gap with this spec with actor chains\r\n\r\nSee https://notes.karlmcguinness.com/notes/standardize-act-across-assertion-grants-and-jwt-access-tokens/ for description of the problem.\r\n\r\nI don't think optimizing for a single-hop delegation is the right play for a new spec like this.  Addressing the large gap with delegation chains would drive urgency for adoption as folks don't have prior art.  \r\n\r\nI don't expect this PR to be merged as-is, but rather start a discussion with something concrete that we can react to.   Happy to discuss more if you are interested.",
+      "createdAt": "2026-03-10T05:52:54Z",
+      "updatedAt": "2026-03-10T05:52:54Z",
+      "baseRepository": "Sreyanth/draft-mora-oauth-entity-profiles",
+      "baseRefName": "main",
+      "baseRefOid": "4089e133bbee24d05f2f696155b92a9c6cb36420",
+      "headRepository": "mcguinness/draft-mora-oauth-entity-profiles",
+      "headRefName": "act-chain",
+      "headRefOid": "a0fe891394d50b0168a5ae0b9d14226054ce4dc6",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
+    }
+  ]
 }

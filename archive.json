@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-04-07T00:36:14.455074+00:00",
+  "timestamp": "2026-04-09T00:30:24.646561+00:00",
   "repo": "Sreyanth/draft-mora-oauth-entity-profiles",
   "labels": [
     {
@@ -89,7 +89,7 @@
       "labels": [],
       "body": "Changes introduced in draft-01:\r\n\r\n- Introduced Actor Profiles to classify acting entities in delegation contexts\r\n- Extended Entity Profile use to JWT authorization grant assertions\r\n- Added Karl McGuinness as co-author\r\n- Clarified DCR behavior when the AS modifies or omits a requested client_profile\r\n- Refined RS behavior to condition enforcement on entity_profiles_supported advertisement\r\n- Editorial refinements to definitions and examples\r\n\r\nThis is a follow-up after reviewing #1 and the latest draft from Karl (https://mcguinness.github.io/draft-mcguinness-oauth-actor-profile/draft-mcguinness-oauth-actor-profile.html) to absorb the vocabulary layer for Actor Profiles into the Entity Profiles draft.",
       "createdAt": "2026-04-06T08:13:36Z",
-      "updatedAt": "2026-04-06T08:13:36Z",
+      "updatedAt": "2026-04-07T04:15:37Z",
       "baseRepository": "Sreyanth/draft-mora-oauth-entity-profiles",
       "baseRefName": "main",
       "baseRefOid": "4089e133bbee24d05f2f696155b92a9c6cb36420",
@@ -101,7 +101,196 @@
       "mergedBy": null,
       "mergeCommit": null,
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOQACHtc7yMMt_",
+          "commit": {
+            "abbreviatedOid": "d03dbab"
+          },
+          "author": "mcguinness",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-04-06T17:00:50Z",
+          "updatedAt": "2026-04-07T04:15:37Z",
+          "comments": [
+            {
+              "originalPosition": 16,
+              "body": "can we swap this to public@karlmcguinness.com for the bots",
+              "createdAt": "2026-04-06T17:00:51Z",
+              "updatedAt": "2026-04-07T04:15:37Z"
+            },
+            {
+              "originalPosition": 40,
+              "body": "Do we also want to mention Transaction Tokens?",
+              "createdAt": "2026-04-06T17:02:01Z",
+              "updatedAt": "2026-04-07T04:15:37Z"
+            },
+            {
+              "originalPosition": 104,
+              "body": "In practice, I rarely see public vs client described as \u201cclient confidentiality classification\u201d.   Suggest we adopt the more adopted term `client type` or `client type (public vs confidential)` which is defined in 6749.  \n\n",
+              "createdAt": "2026-04-06T17:46:23Z",
+              "updatedAt": "2026-04-07T04:15:37Z"
+            },
+            {
+              "originalPosition": 90,
+              "body": "I also defined rejection semantics for required values in https://mcguinness.github.io/draft-mcguinness-oauth-actor-profile/draft-mcguinness-oauth-actor-profile.html#section-4.5\n\nExample \n\n> When local policy requires that the sub_profile of a subject or actor belong to a specific set of known values, and the presented value is absent or not in that set, the AS or RS MAY reject the request.\n\n\nI go on to define additional policy processing rules.  I think some of this makes sense to stay in Actor Chain  Profile but it may make sense to  capture some higher level framing here about how the values can be processed and rejected. ",
+              "createdAt": "2026-04-06T17:53:27Z",
+              "updatedAt": "2026-04-07T04:15:37Z"
+            },
+            {
+              "originalPosition": 113,
+              "body": "Same comment as https://github.com/Sreyanth/draft-mora-oauth-entity-profiles/pull/2/changes#r3040595704",
+              "createdAt": "2026-04-06T17:55:30Z",
+              "updatedAt": "2026-04-07T04:15:37Z"
+            },
+            {
+              "originalPosition": 125,
+              "body": "```suggestion\nThe `sub_profile` Claim MAY also apper within `act` (Actor) Claim nodes {{RFC8693}} to identify the Entity Profile of the acting entity at each step in a delegation chain. This allows acting entities in delegation scenarios to be classified using the same Entity Profile vocabulary. The value MUST conform to the same syntax and registry requirements defined in [](#representation-in-token-claims-and-metadata).\n```",
+              "createdAt": "2026-04-07T03:00:26Z",
+              "updatedAt": "2026-04-07T04:15:37Z"
+            },
+            {
+              "originalPosition": 154,
+              "body": "```suggestion\n: OPTIONAL. JSON object containing members: `client`, `subject`, and `actor`, each a JSON array of supported Entity Profiles. The `client` array lists Entity Profiles supported for client classification. The `subject` array lists Entity Profiles supported for subject classification.\n```",
+              "createdAt": "2026-04-07T03:02:23Z",
+              "updatedAt": "2026-04-07T04:15:37Z"
+            },
+            {
+              "originalPosition": 154,
+              "body": "We want to enable extensibility so suggestion is to not limit to 3",
+              "createdAt": "2026-04-07T03:02:49Z",
+              "updatedAt": "2026-04-07T04:15:38Z"
+            },
+            {
+              "originalPosition": 158,
+              "body": "> it MUST include at least one of client or subject,\n\nCan it include just actor and not subject or client?",
+              "createdAt": "2026-04-07T03:04:32Z",
+              "updatedAt": "2026-04-07T04:15:37Z"
+            },
+            {
+              "originalPosition": 180,
+              "body": "What is driving this change in the PR?  Seems like a different change",
+              "createdAt": "2026-04-07T03:06:10Z",
+              "updatedAt": "2026-04-07T04:15:37Z"
+            },
+            {
+              "originalPosition": 205,
+              "body": "Can't other token types (assertion, id_token, tx token) be introspected?  Not sure this needs to be restricted to access token",
+              "createdAt": "2026-04-07T03:07:16Z",
+              "updatedAt": "2026-04-07T04:15:37Z"
+            },
+            {
+              "originalPosition": 209,
+              "body": "Same comment as above, should apply to any JWT token type",
+              "createdAt": "2026-04-07T03:07:42Z",
+              "updatedAt": "2026-04-07T04:15:37Z"
+            },
+            {
+              "originalPosition": 267,
+              "body": "Does it make sense to indicate the additional profiles or extensions may define these behaviors?",
+              "createdAt": "2026-04-07T03:09:12Z",
+              "updatedAt": "2026-04-07T04:15:37Z"
+            },
+            {
+              "originalPosition": 269,
+              "body": "Can't actor profile also be requested? ",
+              "createdAt": "2026-04-07T03:09:42Z",
+              "updatedAt": "2026-04-07T04:15:37Z"
+            },
+            {
+              "originalPosition": 298,
+              "body": "Can we generalize this so it also applies to Authorization Servers consuming tokens or assertions as well (e.g Token Exchange or Assertion Grant)",
+              "createdAt": "2026-04-07T03:12:43Z",
+              "updatedAt": "2026-04-07T04:15:37Z"
+            },
+            {
+              "originalPosition": 326,
+              "body": "This change feels like a separate PR",
+              "createdAt": "2026-04-07T03:13:54Z",
+              "updatedAt": "2026-04-07T04:15:37Z"
+            },
+            {
+              "originalPosition": 302,
+              "body": "This is too broad now that support is split across client, subject, and actor. If an AS advertises only actor profiles, or advertises client profiles but not subject profiles, this text can make RSes penalize tokens for missing unrelated profile claims. I\u2019d scope this to the specific advertised usage location and to claims expected for the token context.",
+              "createdAt": "2026-04-07T03:35:37Z",
+              "updatedAt": "2026-04-07T04:15:37Z"
+            },
+            {
+              "originalPosition": 448,
+              "body": "For registrations that include the \"Actor Profile\" usage location, Designated Experts SHOULD verify that the value describes a type of acting entity relevant to OAuth delegation scenarios and is suitable for use as a `sub_profile` value within an `act` object.",
+              "createdAt": "2026-04-07T03:39:08Z",
+              "updatedAt": "2026-04-07T04:15:37Z"
+            },
+            {
+              "originalPosition": 156,
+              "body": "```suggestion\n  The `actor` array, if present, lists Entity Profiles that the Authorization Server recognizes and will validate when they appear as `sub_profile` values within `act` nodes {{RFC8693}} in inbound tokens, actor assertions, or issued tokens. Actors whose `sub_profile` values are not listed in this array MAY be rejected by the Authorization Server. Its absence indicates that no support for Actor Profile usage in delegation contexts is declared.\n```",
+              "createdAt": "2026-04-07T03:41:06Z",
+              "updatedAt": "2026-04-07T04:15:37Z"
+            },
+            {
+              "originalPosition": 106,
+              "body": "```suggestion\nAuthorization Servers that process tokens containing syntactically valid Entity Profile values whose semantics they do not understand locally SHOULD preserve those values unchanged when producing derived tokens, provided the values are registered for the applicable usage location or are valid private Entity Profiles. Authorization Servers MUST NOT preserve values that are syntactically invalid or invalid for the applicable usage location.\n```",
+              "createdAt": "2026-04-07T03:45:16Z",
+              "updatedAt": "2026-04-07T04:15:37Z"
+            },
+            {
+              "originalPosition": 211,
+              "body": "```suggestion\nWhen the introspection response includes the `act` parameter as defined in {{RFC8693}}, the Authorization Server SHOULD include a `sub_profile` member within `act` objects, using the same syntax and semantics as the `sub_profile` Claim, to classify acting entities when it has assigned an Actor Profile.\n```",
+              "createdAt": "2026-04-07T03:47:12Z",
+              "updatedAt": "2026-04-07T04:15:37Z"
+            },
+            {
+              "originalPosition": 260,
+              "body": "```suggestion\n- SHOULD issue registered Entity Profile values only in the usage locations defined for those values in the OAuth Entity Profiles registry ([](#oauth-entity-profiles-registry)), such as `client_profile`, top-level `sub_profile`, or `sub_profile` within `act` nodes. Private Entity Profile values SHOULD be issued only in usage contexts consistent with their private definitions.\n```",
+              "createdAt": "2026-04-07T03:50:56Z",
+              "updatedAt": "2026-04-07T04:15:37Z"
+            },
+            {
+              "originalPosition": 1,
+              "body": "```suggestion\n1. MUST verify that Entity Profile values conform to the syntax in [](#representation-in-token-claims-and-metadata) and are either registered in the OAuth Entity Profiles registry for the applicable usage location or are valid private Entity Profiles used in a context consistent with their private definitions.\n```",
+              "createdAt": "2026-04-07T03:53:44Z",
+              "updatedAt": "2026-04-07T04:15:37Z"
+            },
+            {
+              "originalPosition": 355,
+              "body": "```suggestion\nIf a Resource Server encounters an `act` node without a `sub_profile` member, and the Authorization Server\u2019s metadata indicates support for Actor Profiles through the `actor` array in `entity_profiles_supported`, the Resource Server SHOULD treat the acting entity as unclassified. Where local policy or the protected resource requires Actor Profile information, the Resource Server SHOULD apply conservative or default-deny policies consistent with [](#resource-server-behavior). If the Authorization Server\u2019s metadata does not declare support for Actor Profiles, the absence of `sub_profile` carries no normative significance under this specification.\n```",
+              "createdAt": "2026-04-07T03:55:41Z",
+              "updatedAt": "2026-04-07T04:15:37Z"
+            },
+            {
+              "originalPosition": 384,
+              "body": "```suggestion\nWhen Entity Profile Claims are conveyed in JWT authorization grant assertions {{RFC7523}}, the Authorization Server receives classification information from an external issuer rather than from its own registration or authentication processes. This introduces additional trust considerations. Authorization Servers MUST NOT accept `client_profile` or `sub_profile` values from JWT assertions at face value, and SHOULD verify these values against independent knowledge of the client or subject, or against the issuer's attestation trustworthiness.\n```",
+              "createdAt": "2026-04-07T04:03:51Z",
+              "updatedAt": "2026-04-07T04:15:38Z"
+            },
+            {
+              "originalPosition": 409,
+              "body": "```suggestion\nWhen `sub_profile` values appear within `act` Claim nodes {{RFC8693}}, they introduce additional classification assertions about acting entities in a delegation chain. Authorization Servers MUST NOT accept or issue `sub_profile` values in `act` nodes without verifying them against registration data, trusted issuer assertions, attestation evidence, or other policy inputs. Resource Servers MUST NOT trust `sub_profile` values in `act` nodes unless they are obtained from a trusted Authorization Server and the token or introspection response has been validated according to the applicable OAuth and JWT requirements.\n\nUnverified actor profiles may enable privilege escalation; for example, an attacker could craft a delegation chain where an inner `act` node claims a `sub_profile` value of `\"user\"` when the actual actor is a `\"service\"`, potentially causing a Resource Server to apply user-level permissions to a service.\n```",
+              "createdAt": "2026-04-07T04:07:54Z",
+              "updatedAt": "2026-04-07T04:15:38Z"
+            },
+            {
+              "originalPosition": 417,
+              "body": "```suggestion\nWhen a token carries both a top-level `sub_profile` and a different `sub_profile` within an `act` node (e.g., a top-level `sub_profile` of `\"user\"` and an `act` `sub_profile` of `\"ai_agent\"`), Resource Servers that use Entity Profiles in authorization decisions MUST consider the delegation context and MUST NOT treat the top-level `sub_profile` as fully describing the active actor. Relying only on the top-level subject classification can lead to a confused deputy scenario where the acting entity obtains access beyond what the delegation context warrants.\n```",
+              "createdAt": "2026-04-07T04:09:13Z",
+              "updatedAt": "2026-04-07T04:15:38Z"
+            },
+            {
+              "originalPosition": 16,
+              "body": "```suggestion\n    email: \"public@karlmcguinness.com\"\n```",
+              "createdAt": "2026-04-07T04:10:48Z",
+              "updatedAt": "2026-04-07T04:15:38Z"
+            },
+            {
+              "originalPosition": 158,
+              "body": "```suggestion\n  Authorization Servers SHOULD include all supported profiles in each array but MAY omit some supported profiles from this metadata if desired. Values in the `actor` array need not match those in the `subject` array, as an Authorization Server may support different profiles for different contexts. Empty arrays MUST NOT be included, and members with no values SHOULD be omitted. When entity_profiles_supported is present, it MUST include at least one of client, subject, or actor, and that member MUST contain at least one value. If no Entity Profiles are supported, the entire parameter SHOULD be omitted.\n```",
+              "createdAt": "2026-04-07T04:14:17Z",
+              "updatedAt": "2026-04-07T04:15:38Z"
+            }
+          ]
+        }
+      ]
     }
   ]
 }

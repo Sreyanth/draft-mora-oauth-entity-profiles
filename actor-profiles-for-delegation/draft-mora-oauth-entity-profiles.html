@@ -9,7 +9,7 @@
 <meta content="Pamela Dingle" name="author">
 <meta content="Karl McGuinness" name="author">
 <meta content="
-       This specification introduces Entity Profiles as a mechanism to categorize OAuth 2.0 entities—clients and subjects—based on their operational context. Entity Profiles provide structured descriptors for the client initiating the OAuth flow and the subject represented in tokens. This document defines new JWT Claim names and metadata parameters for use in access tokens, ID tokens, JWT authorization grant assertions, token introspection responses, dynamic client registration, and Authorization Server metadata. It also defines vocabulary for classifying acting entities within delegation chains. 
+       This specification introduces Entity Profiles as a mechanism to categorize OAuth 2.0 entities—clients and subjects—based on their operational context. Entity Profiles provide structured descriptors for the client initiating the OAuth flow and the subject represented in tokens. This document defines new JWT Claim names and metadata parameters for use in JWTs issued or consumed in OAuth flows, including but not limited to access tokens, ID tokens, JWT authorization grant assertions, and transaction tokens, as well as in token introspection responses, dynamic client registration, and Authorization Server metadata. It also defines vocabulary for classifying acting entities within delegation chains. 
     " name="description">
 <meta content="xml2rfc 3.32.0" name="generator">
 <meta content="OAuth" name="keyword">
@@ -1057,7 +1057,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Mora, et al.</td>
-<td class="center">Expires 8 October 2026</td>
+<td class="center">Expires 15 October 2026</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1070,12 +1070,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-mora-oauth-entity-profiles-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2026-04-06" class="published">6 April 2026</time>
+<time datetime="2026-04-13" class="published">13 April 2026</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2026-10-08">8 October 2026</time></dd>
+<dd class="expires"><time datetime="2026-10-15">15 October 2026</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1096,7 +1096,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <h1 id="title">OAuth 2.0 Entity Profiles</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
-<p id="section-abstract-1">This specification introduces Entity Profiles as a mechanism to categorize OAuth 2.0 entities—clients and subjects—based on their operational context. Entity Profiles provide structured descriptors for the client initiating the OAuth flow and the subject represented in tokens. This document defines new JWT Claim names and metadata parameters for use in access tokens, ID tokens, JWT authorization grant assertions, token introspection responses, dynamic client registration, and Authorization Server metadata. It also defines vocabulary for classifying acting entities within delegation chains.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-1">This specification introduces Entity Profiles as a mechanism to categorize OAuth 2.0 entities—clients and subjects—based on their operational context. Entity Profiles provide structured descriptors for the client initiating the OAuth flow and the subject represented in tokens. This document defines new JWT Claim names and metadata parameters for use in JWTs issued or consumed in OAuth flows, including but not limited to access tokens, ID tokens, JWT authorization grant assertions, and transaction tokens, as well as in token introspection responses, dynamic client registration, and Authorization Server metadata. It also defines vocabulary for classifying acting entities within delegation chains.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 </section>
 <section class="note rfcEditorRemove" id="section-note.1">
       <h2 id="name-about-this-document">
@@ -1133,7 +1133,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 8 October 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 15 October 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1258,6 +1258,9 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.5">
                 <p id="section-toc.1-1.9.2.5.1"><a href="#section-9.5" class="auto internal xref">9.5</a>.  <a href="#name-validation-requirements" class="internal xref">Validation Requirements</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.6">
+                <p id="section-toc.1-1.9.2.6.1"><a href="#section-9.6" class="auto internal xref">9.6</a>.  <a href="#name-consuming-tokens-and-assert" class="internal xref">Consuming Tokens and Assertions</a></p>
 </li>
             </ul>
 </li>
@@ -1440,7 +1443,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
           <p id="section-1-3.2.1"><code>sub_profile</code>: Describes the entity represented by the subject (<code>sub</code>) Claim in an issued token (e.g., user, service, AI agent).<a href="#section-1-3.2.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-1-4">This specification establishes a registry for OAuth Entity Profiles and defines an initial set of Entity Profile values. This document also defines how the Entity Profiles can be used in access tokens, ID tokens, JWT authorization grant assertions, token introspection responses, dynamic client registration, and Authorization Server metadata.<a href="#section-1-4" class="pilcrow">¶</a></p>
+<p id="section-1-4">This specification establishes a registry for OAuth Entity Profiles and defines an initial set of Entity Profile values. This document also defines how the Entity Profiles can be used in any JWT issued or consumed in OAuth flows, including but not limited to access tokens, ID tokens, JWT authorization grant assertions, and transaction tokens, as well as in token introspection responses, dynamic client registration, and Authorization Server metadata.<a href="#section-1-4" class="pilcrow">¶</a></p>
 <p id="section-1-5">This specification also defines the use of Entity Profiles in delegation scenarios through the <code>act</code> Claim <span>[<a href="#RFC8693" class="cite xref">RFC8693</a>]</span>, introducing the concept of an Actor Profile to classify acting entities. By applying the same Entity Profile vocabulary to each actor in a delegation chain, this approach enables consistent classification of entities across both direct and delegated access contexts.<a href="#section-1-5" class="pilcrow">¶</a></p>
 <div id="conventions-and-definitions">
 <section id="section-1.1">
@@ -1646,9 +1649,10 @@ profile-token = 1*( ALPHA / DIGIT / "-" / "_" / "." )
             <p id="section-3.3-7.2.1">Be privately defined (see <a href="#private-or-custom-entity-profiles" class="auto internal xref">Section 3.2</a>).<a href="#section-3.3-7.2.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-3.3-8">When processing these values, Authorization Servers and Resource Servers <span class="bcp14">MUST NOT</span> assume any implicit relationships or hierarchies between the Entity Profiles unless explicitly agreed upon by the Authorization Server and the Resource Server or if defined in a different specification. Entity Profiles are also orthogonal to the client's confidentiality classification (public or confidential) as defined in <span><a href="https://rfc-editor.org/rfc/rfc6749#section-2.1" class="relref">Section 2.1</a> of [<a href="#RFC6749" class="cite xref">RFC6749</a>]</span>; the same Entity Profile value may apply to both public and confidential clients.<a href="#section-3.3-8" class="pilcrow">¶</a></p>
-<p id="section-3.3-9">Authorization Servers that process tokens containing Entity Profile values they do not recognize <span class="bcp14">SHOULD</span> preserve those values unchanged when producing derived tokens (e.g., during token exchange or delegation). This allows unrecognized profiles to be propagated through the token chain, enabling Resource Servers that do recognize those profiles to make informed decisions based on them.<a href="#section-3.3-9" class="pilcrow">¶</a></p>
-<p id="section-3.3-10">For example, a token might include the Entity Profiles <code>ai_agent acme_verified_robot</code>, where <code>acme_verified_robot</code> is a vendor-defined profile used to identify industrial automation clients from ACME Corp. These two profiles are independent — the presence of both does not imply that one is a subtype of the other, nor that they share privilege or trust levels. Treating <code>acme_verified_robot</code> as a subclass of <code>ai_agent</code>, or vice versa, could result in incorrect access decisions.<a href="#section-3.3-10" class="pilcrow">¶</a></p>
+<p id="section-3.3-8">When processing these values, Authorization Servers and Resource Servers <span class="bcp14">MUST NOT</span> assume any implicit relationships or hierarchies between the Entity Profiles unless explicitly agreed upon by the Authorization Server and the Resource Server or if defined in a different specification.<a href="#section-3.3-8" class="pilcrow">¶</a></p>
+<p id="section-3.3-9">Entity Profiles are orthogonal to the OAuth 2.0 client type (public or confidential) as defined in <span><a href="https://rfc-editor.org/rfc/rfc6749#section-2.1" class="relref">Section 2.1</a> of [<a href="#RFC6749" class="cite xref">RFC6749</a>]</span>. The client type classifies a client based on its ability to maintain credential confidentiality. The same Entity Profile value may apply to both public and confidential clients.<a href="#section-3.3-9" class="pilcrow">¶</a></p>
+<p id="section-3.3-10">Authorization Servers that process tokens containing syntactically valid Entity Profile values whose semantics they do not understand locally <span class="bcp14">SHOULD</span> preserve those values unchanged when producing derived tokens, provided the values are registered for the applicable usage location or are valid private Entity Profiles. Authorization Servers <span class="bcp14">MUST NOT</span> preserve values that are syntactically invalid or invalid for the applicable usage location.<a href="#section-3.3-10" class="pilcrow">¶</a></p>
+<p id="section-3.3-11">For example, a token might include the Entity Profiles <code>ai_agent acme_verified_robot</code>, where <code>acme_verified_robot</code> is a vendor-defined profile used to identify industrial automation clients from ACME Corp. These two profiles are independent — the presence of both does not imply that one is a subtype of the other, nor that they share privilege or trust levels. Treating <code>acme_verified_robot</code> as a subclass of <code>ai_agent</code>, or vice versa, could result in incorrect access decisions.<a href="#section-3.3-11" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1658,7 +1662,7 @@ profile-token = 1*( ALPHA / DIGIT / "-" / "_" / "." )
       <h2 id="name-entity-profile-jwt-claims">
 <a href="#section-4" class="section-number selfRef">4. </a><a href="#name-entity-profile-jwt-claims" class="section-name selfRef">Entity Profile JWT Claims</a>
       </h2>
-<p id="section-4-1">This specification defines two new Claim Names: <code>client_profile</code> and <code>sub_profile</code>. These Claims may appear in JWTs like JWT access tokens <span>[<a href="#RFC9068" class="cite xref">RFC9068</a>]</span> and OpenID Connect ID tokens <span>[<a href="#OIDC" class="cite xref">OIDC</a>]</span> issued by the Authorization Server, as well as in JWT authorization grant assertions <span>[<a href="#RFC7523" class="cite xref">RFC7523</a>]</span> presented to the token endpoint. These Claims may be included in any other JWTs issued or used in OAuth flows.<a href="#section-4-1" class="pilcrow">¶</a></p>
+<p id="section-4-1">This specification defines two new Claim Names: <code>client_profile</code> and <code>sub_profile</code>. These Claims may appear in JWTs like JWT access tokens <span>[<a href="#RFC9068" class="cite xref">RFC9068</a>]</span>, OpenID Connect ID tokens <span>[<a href="#OIDC" class="cite xref">OIDC</a>]</span>, and Transaction Tokens <span>[<a href="#I-D.ietf-oauth-transaction-tokens" class="cite xref">I-D.ietf-oauth-transaction-tokens</a>]</span>, as well as in JWT authorization grant assertions <span>[<a href="#RFC7523" class="cite xref">RFC7523</a>]</span> presented to the token endpoint. These Claims may be included in any other JWTs issued or used in OAuth flows.<a href="#section-4-1" class="pilcrow">¶</a></p>
 <div id="clientprofile-claim">
 <section id="section-4.1">
         <h3 id="name-client_profile-claim">
@@ -1673,7 +1677,7 @@ profile-token = 1*( ALPHA / DIGIT / "-" / "_" / "." )
 <a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-sub_profile-claim" class="section-name selfRef"><code>sub_profile</code> Claim</a>
         </h3>
 <p id="section-4.2-1">The <code>sub_profile</code> (Subject Profile) Claim indicates the Entity Profile(s) of the Subject represented by the <code>sub</code> (Subject) Claim in a JWT. If included, the value of this Claim <span class="bcp14">MUST</span> conform to the rules defined in <a href="#representation-in-token-claims-and-metadata" class="auto internal xref">Section 3.3</a>. Use of this Claim is <span class="bcp14">OPTIONAL</span>.<a href="#section-4.2-1" class="pilcrow">¶</a></p>
-<p id="section-4.2-2">The <code>sub_profile</code> Claim also appears within <code>act</code> (Actor) Claim nodes <span>[<a href="#RFC8693" class="cite xref">RFC8693</a>]</span> to identify the Entity Profile of the acting entity at each step in a delegation chain. This allows acting entities in delegation scenarios to be classified using the same Entity Profile vocabulary. The value <span class="bcp14">MUST</span> conform to the same syntax and registry requirements defined in <a href="#representation-in-token-claims-and-metadata" class="auto internal xref">Section 3.3</a>.<a href="#section-4.2-2" class="pilcrow">¶</a></p>
+<p id="section-4.2-2">The <code>sub_profile</code> Claim <span class="bcp14">MAY</span> also appear within <code>act</code> (Actor) Claim nodes <span>[<a href="#RFC8693" class="cite xref">RFC8693</a>]</span> to identify the Entity Profile of the acting entity at each step in a delegation chain. This allows acting entities in delegation scenarios to be classified using the same Entity Profile vocabulary. The value <span class="bcp14">MUST</span> conform to the same syntax and registry requirements defined in <a href="#representation-in-token-claims-and-metadata" class="auto internal xref">Section 3.3</a>.<a href="#section-4.2-2" class="pilcrow">¶</a></p>
 <p id="section-4.2-3">Below is a non-normative example illustrating how the new Entity Profile Claims can appear within a JWT access token. Other standard Claims are omitted for brevity:<a href="#section-4.2-3" class="pilcrow">¶</a></p>
 <div class="lang-json sourcecode" id="section-4.2-4">
 <pre>
@@ -1713,9 +1717,9 @@ profile-token = 1*( ALPHA / DIGIT / "-" / "_" / "." )
 <span class="break"></span><dl class="dlParallel" id="section-5-2">
         <dt id="section-5-2.1">"entity_profiles_supported":</dt>
         <dd style="margin-left: 1.5em" id="section-5-2.2">
-          <p id="section-5-2.2.1"><span class="bcp14">OPTIONAL</span>. JSON object containing up to three members: <code>client</code>, <code>subject</code>, and <code>actor</code>, each a JSON array of supported Entity Profiles. The <code>client</code> array lists Entity Profiles supported for client classification. The <code>subject</code> array lists Entity Profiles supported for subject classification.<a href="#section-5-2.2.1" class="pilcrow">¶</a></p>
-<p id="section-5-2.2.2">The <code>actor</code> array, if present, lists Entity Profiles supported for use in <code>sub_profile</code> Claims within <code>act</code> nodes <span>[<a href="#RFC8693" class="cite xref">RFC8693</a>]</span>. Its absence indicates that no support for delegation contexts is declared.<a href="#section-5-2.2.2" class="pilcrow">¶</a></p>
-<p id="section-5-2.2.3">Authorization Servers <span class="bcp14">SHOULD</span> include all supported profiles in each array but <span class="bcp14">MAY</span> omit some supported profiles from this metadata if desired. Values in the <code>actor</code> array need not match those in the <code>subject</code> array, as an Authorization Server may support different profiles for different contexts. Empty arrays <span class="bcp14">MUST NOT</span> be included, and members with no values <span class="bcp14">SHOULD</span> be omitted. When entity_profiles_supported is present, it <span class="bcp14">MUST</span> include at least one of client or subject, and that member <span class="bcp14">MUST</span> contain at least one value. If no Entity Profiles are supported, the entire parameter <span class="bcp14">SHOULD</span> be omitted.<a href="#section-5-2.2.3" class="pilcrow">¶</a></p>
+          <p id="section-5-2.2.1"><span class="bcp14">OPTIONAL</span>. JSON object containing members: <code>client</code>, <code>subject</code>, and <code>actor</code>, each a JSON array of supported Entity Profiles. The <code>client</code> array lists Entity Profiles supported for client classification. The <code>subject</code> array lists Entity Profiles supported for subject classification.<a href="#section-5-2.2.1" class="pilcrow">¶</a></p>
+<p id="section-5-2.2.2">The <code>actor</code> array, if present, lists Entity Profiles that the Authorization Server recognizes and will validate when they appear as <code>sub_profile</code> values within <code>act</code> nodes <span>[<a href="#RFC8693" class="cite xref">RFC8693</a>]</span> in inbound tokens, actor assertions, or issued tokens. Actors whose <code>sub_profile</code> values are not listed in this array <span class="bcp14">MAY</span> be rejected by the Authorization Server. Its absence indicates that no support for Actor Profile usage in delegation contexts is declared.<a href="#section-5-2.2.2" class="pilcrow">¶</a></p>
+<p id="section-5-2.2.3">Authorization Servers <span class="bcp14">SHOULD</span> include all supported profiles in each array but <span class="bcp14">MAY</span> omit some supported profiles from this metadata if desired. Values in the <code>actor</code> array need not match those in the <code>subject</code> array, as an Authorization Server may support different profiles for different contexts. Empty arrays <span class="bcp14">MUST NOT</span> be included, and members with no values <span class="bcp14">SHOULD</span> be omitted. When entity_profiles_supported is present, it <span class="bcp14">MUST</span> include at least one of client, subject, or actor, and that member <span class="bcp14">MUST</span> contain at least one value. If no Entity Profiles are supported, the entire parameter <span class="bcp14">SHOULD</span> be omitted.<a href="#section-5-2.2.3" class="pilcrow">¶</a></p>
 </dd>
       <dd class="break"></dd>
 </dl>
@@ -1782,16 +1786,16 @@ profile-token = 1*( ALPHA / DIGIT / "-" / "_" / "." )
 <span class="break"></span><dl class="dlParallel" id="section-7-2">
         <dt id="section-7-2.1">"sub_profile":</dt>
         <dd style="margin-left: 1.5em" id="section-7-2.2">
-          <p id="section-7-2.2.1"><span class="bcp14">OPTIONAL</span>. The Entity Profile of the resource owner identified by the <code>sub</code> Claim associated with the access token.<a href="#section-7-2.2.1" class="pilcrow">¶</a></p>
+          <p id="section-7-2.2.1"><span class="bcp14">OPTIONAL</span>. The Entity Profile of the resource owner identified by the <code>sub</code> Claim associated with the token.<a href="#section-7-2.2.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
 <dt id="section-7-2.3">"client_profile":</dt>
         <dd style="margin-left: 1.5em" id="section-7-2.4">
-          <p id="section-7-2.4.1"><span class="bcp14">OPTIONAL</span>. The Entity Profile of the client identified by the <code>client_id</code> Claim associated with the access token.<a href="#section-7-2.4.1" class="pilcrow">¶</a></p>
+          <p id="section-7-2.4.1"><span class="bcp14">OPTIONAL</span>. The Entity Profile of the client identified by the <code>client_id</code> Claim associated with the token.<a href="#section-7-2.4.1" class="pilcrow">¶</a></p>
 </dd>
       <dd class="break"></dd>
 </dl>
-<p id="section-7-3">When the introspection response includes the <code>act</code> parameter as defined in <span>[<a href="#RFC8693" class="cite xref">RFC8693</a>]</span>, the <code>sub_profile</code> Claim <span class="bcp14">SHOULD</span> appear within <code>act</code> nodes to classify acting entities when the Authorization Server has assigned one.<a href="#section-7-3" class="pilcrow">¶</a></p>
+<p id="section-7-3">When the introspection response includes the <code>act</code> parameter as defined in <span>[<a href="#RFC8693" class="cite xref">RFC8693</a>]</span>, the Authorization Server <span class="bcp14">SHOULD</span> include a <code>sub_profile</code> member within <code>act</code> objects, using the same syntax and semantics as the <code>sub_profile</code> Claim, to classify acting entities when it has assigned an Actor Profile.<a href="#section-7-3" class="pilcrow">¶</a></p>
 <p id="section-7-4">The following is a non-normative example of how these parameters might appear in a token introspection response for a direct (non-delegated) access context. Other standard parameters are omitted for brevity:<a href="#section-7-4" class="pilcrow">¶</a></p>
 <div class="lang-json sourcecode" id="section-7-5">
 <pre>
@@ -1917,7 +1921,7 @@ profile-token = 1*( ALPHA / DIGIT / "-" / "_" / "." )
             <p id="section-9.3-2.1.1"><span class="bcp14">MAY</span> include <code>sub_profile</code> and <code>client_profile</code> Claims in access tokens and ID tokens, according to their policies and client registration metadata. When included, these Claims <span class="bcp14">MUST</span> conform to the rules defined in <a href="#representation-in-token-claims-and-metadata" class="auto internal xref">Section 3.3</a>.<a href="#section-9.3-2.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-9.3-2.2">
-            <p id="section-9.3-2.2.1"><span class="bcp14">SHOULD</span> only issue Entity Profile values in their registered usage locations as defined in the OAuth Entity Profiles registry (<a href="#oauth-entity-profiles-registry" class="auto internal xref">Section 14.1</a>).<a href="#section-9.3-2.2.1" class="pilcrow">¶</a></p>
+            <p id="section-9.3-2.2.1"><span class="bcp14">SHOULD</span> issue registered Entity Profile values only in the usage locations defined for those values in the OAuth Entity Profiles registry (<a href="#oauth-entity-profiles-registry" class="auto internal xref">Section 14.1</a>), such as <code>client_profile</code>, top-level <code>sub_profile</code>, or <code>sub_profile</code> within <code>act</code> nodes. Private Entity Profile values <span class="bcp14">SHOULD</span> be issued only in usage contexts consistent with their private definitions.<a href="#section-9.3-2.2.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-9.3-2.3">
             <p id="section-9.3-2.3.1"><span class="bcp14">MAY</span> automatically include Entity Profile Claims for certain categories of clients, such as always providing <code>client_profile</code> for autonomous AI agent clients.<a href="#section-9.3-2.3.1" class="pilcrow">¶</a></p>
@@ -1932,8 +1936,8 @@ profile-token = 1*( ALPHA / DIGIT / "-" / "_" / "." )
             <p id="section-9.3-2.6.1">When issuing refreshed or exchanged tokens, Authorization Servers <span class="bcp14">SHOULD</span> re-evaluate the Entity Profiles and update them if context or identity has changed. Entity Profiles <span class="bcp14">MUST NOT</span> be assumed to persist across sessions without validation.<a href="#section-9.3-2.6.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-9.3-3">This specification does not prescribe how clients request Entity Profile Claims. In practice, Authorization Servers may enforce the inclusion of these Claims, especially for high-risk or privileged profiles such as AI agents, to ensure consistent and secure policy enforcement. For other entity profiles, to reduce token size and privacy exposure, Claims may be omitted by default and included only when explicitly requested. This approach balances the need for security and efficient token management, while preventing clients from arbitrarily adding or omitting Entity Profile information to manipulate access control decisions.<a href="#section-9.3-3" class="pilcrow">¶</a></p>
-<p id="section-9.3-4">In OpenID Connect deployments, clients <span class="bcp14">MAY</span> use the <code>claims</code> request parameter <span>[<a href="#OIDC" class="cite xref">OIDC</a>]</span> to request Entity Profile Claims. The following is a non-normative example of requesting both <code>client_profile</code> and <code>sub_profile</code> in an access token:<a href="#section-9.3-4" class="pilcrow">¶</a></p>
+<p id="section-9.3-3">This specification does not prescribe how clients request Entity Profile Claims, but it is expected that existing mechanisms will be re-used. Future extensions may define additional request mechanisms along with any associated rejection rules and error handling. In practice, Authorization Servers may enforce the inclusion of these Claims by default, especially for high-risk or privileged profiles such as AI agents, to ensure consistent and secure policy enforcement. For other entity profiles, to reduce token size and privacy exposure, Claims may be omitted by default and included only when explicitly requested. This approach balances the need for security and efficient token management, while preventing clients from arbitrarily adding or omitting Entity Profile information to manipulate access control decisions.<a href="#section-9.3-3" class="pilcrow">¶</a></p>
+<p id="section-9.3-4">As an example, in OpenID Connect deployments, clients may use the <code>claims</code> request parameter <span>[<a href="#OIDC" class="cite xref">OIDC</a>]</span> to request Entity Profile Claims. The following is a non-normative example of requesting both <code>client_profile</code> and <code>sub_profile</code> in an access token:<a href="#section-9.3-4" class="pilcrow">¶</a></p>
 <div class="lang-json sourcecode" id="section-9.3-5">
 <pre>
 {
@@ -1970,7 +1974,7 @@ profile-token = 1*( ALPHA / DIGIT / "-" / "_" / "." )
 <p id="section-9.5-1">Authorization Servers:<a href="#section-9.5-1" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-9.5-2">
 <li id="section-9.5-2.1">
-            <p id="section-9.5-2.1.1"><span class="bcp14">MUST</span> verify that Entity Profile values are either registered in the OAuth Entity Profiles registry or follow proper namespaced private conventions per the rules defined in <a href="#representation-in-token-claims-and-metadata" class="auto internal xref">Section 3.3</a>.<a href="#section-9.5-2.1.1" class="pilcrow">¶</a></p>
+            <p id="section-9.5-2.1.1"><span class="bcp14">MUST</span> verify that Entity Profile values conform to the syntax in <a href="#representation-in-token-claims-and-metadata" class="auto internal xref">Section 3.3</a> and are either registered in the OAuth Entity Profiles registry for the applicable usage location or are valid private Entity Profiles used in a context consistent with their private definitions.<a href="#section-9.5-2.1.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-9.5-2.2">
             <p id="section-9.5-2.2.1"><span class="bcp14">SHOULD</span> ensure that Entity Profile assignments are trustworthy and not based solely on unverified self-assertion. The mechanisms for these verifications are out of scope for this specification, but it is recommended that Authorization Servers implement appropriate checks based on their security policies and operational context.<a href="#section-9.5-2.2.1" class="pilcrow">¶</a></p>
@@ -1993,6 +1997,9 @@ profile-token = 1*( ALPHA / DIGIT / "-" / "_" / "." )
           <li class="normal" id="section-9.5-4.4">
             <p id="section-9.5-4.4.1"><strong>JWT authorization grant processing</strong>: Servers <span class="bcp14">SHOULD</span> return <code>invalid_grant</code> as defined in <span><a href="https://rfc-editor.org/rfc/rfc7523#section-3.1" class="relref">Section 3.1</a> of [<a href="#RFC7523" class="cite xref">RFC7523</a>]</span> if the assertion contains syntactically invalid or unrecognized Entity Profile values.<a href="#section-9.5-4.4.1" class="pilcrow">¶</a></p>
 </li>
+          <li class="normal" id="section-9.5-4.5">
+            <p id="section-9.5-4.5.1"><strong>Token exchange</strong>: When processing inbound tokens or assertions (e.g., <code>subject_token</code> or <code>actor_token</code> in <span>[<a href="#RFC8693" class="cite xref">RFC8693</a>]</span>), Authorization Servers <span class="bcp14">SHOULD</span> validate Entity Profile Claims in the presented tokens and <span class="bcp14">MAY</span> reject the exchange request if the values are invalid, unrecognized, or conflict with local policy.<a href="#section-9.5-4.5.1" class="pilcrow">¶</a></p>
+</li>
         </ul>
 <p id="section-9.5-5">Clear, actionable error responses <span class="bcp14">MUST</span> be returned in accordance with OAuth and OpenID Connect error handling frameworks.<a href="#section-9.5-5" class="pilcrow">¶</a></p>
 <p id="section-9.5-6">Authorization Servers <span class="bcp14">MAY</span>:<a href="#section-9.5-6" class="pilcrow">¶</a></p>
@@ -2009,6 +2016,31 @@ profile-token = 1*( ALPHA / DIGIT / "-" / "_" / "." )
         </ol>
 </section>
 </div>
+<div id="consuming-tokens-and-assertions">
+<section id="section-9.6">
+        <h3 id="name-consuming-tokens-and-assert">
+<a href="#section-9.6" class="section-number selfRef">9.6. </a><a href="#name-consuming-tokens-and-assert" class="section-name selfRef">Consuming Tokens and Assertions</a>
+        </h3>
+<p id="section-9.6-1">When an Authorization Server consumes tokens or assertions containing Entity Profile Claims, such as during token exchange <span>[<a href="#RFC8693" class="cite xref">RFC8693</a>]</span> or JWT authorization grant processing <span>[<a href="#RFC7523" class="cite xref">RFC7523</a>]</span>, it acts in a role analogous to a Resource Server with respect to evaluating those Claims. In addition to the validation requirements defined in <a href="#validation-requirements" class="auto internal xref">Section 9.5</a>, Authorization Servers in this context:<a href="#section-9.6-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-9.6-2.1">
+            <p id="section-9.6-2.1.1"><span class="bcp14">SHOULD</span> use Entity Profile Claims in the presented tokens and assertions to inform authorization and policy decisions for the requested operation.<a href="#section-9.6-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-9.6-2.2">
+            <p id="section-9.6-2.2.1"><span class="bcp14">MUST NOT</span> interpret or infer additional meaning beyond the profile's definition.<a href="#section-9.6-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-9.6-2.3">
+            <p id="section-9.6-2.3.1"><span class="bcp14">SHOULD</span> treat Entity Profile values that are syntactically invalid or that appear in a usage location not defined for that value in the registry as unrecognized, and apply policies accordingly.<a href="#section-9.6-2.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-9.6-2.4">
+            <p id="section-9.6-2.4.1"><span class="bcp14">MAY</span> reject a token containing a <code>client_profile</code> member within an <code>act</code> node or ignore the offending member for the purposes of authorization decisions.<a href="#section-9.6-2.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-9.6-2.5">
+            <p id="section-9.6-2.5.1"><span class="bcp14">MUST NOT</span> preserve values that are syntactically invalid or invalid for the applicable usage location.<a href="#section-9.6-2.5.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+</section>
+</div>
 </section>
 </div>
 <div id="resource-server-behavior">
@@ -2022,10 +2054,10 @@ profile-token = 1*( ALPHA / DIGIT / "-" / "_" / "." )
           <p id="section-10-2.1.1"><span class="bcp14">SHOULD</span> use <code>sub_profile</code> and <code>client_profile</code> Claims to inform access control decisions and apply appropriate policies.<a href="#section-10-2.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-10-2.2">
-          <p id="section-10-2.2.1"><span class="bcp14">SHOULD</span> apply conservative or default-deny policies when <code>entity_profiles_supported</code> is advertised and Entity Profile Claims are missing, unrecognized, or have unknown semantics.<a href="#section-10-2.2.1" class="pilcrow">¶</a></p>
+          <p id="section-10-2.2.1"><span class="bcp14">SHOULD</span> apply conservative or default-deny policies when Entity Profile Claims are missing, unrecognized, or have unknown semantics for the usage location that the Authorization Server has advertised support for in <code>entity_profiles_supported</code>. For example, if the <code>subject</code> array is present in <code>entity_profiles_supported</code> but <code>sub_profile</code> is absent from a token, the Resource Server <span class="bcp14">SHOULD</span> apply conservative policies for subject classification.<a href="#section-10-2.2.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-10-2.3">
-          <p id="section-10-2.3.1"><span class="bcp14">SHOULD NOT</span> penalize tokens for missing Entity Profile Claims when <code>entity_profiles_supported</code> is not advertised.<a href="#section-10-2.3.1" class="pilcrow">¶</a></p>
+          <p id="section-10-2.3.1"><span class="bcp14">SHOULD NOT</span> penalize tokens for missing Entity Profile Claims for unadvertised usage locations.<a href="#section-10-2.3.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-10-2.4">
           <p id="section-10-2.4.1"><span class="bcp14">MAY</span> log Entity Profile information for auditing, monitoring, and anomaly detection purposes.<a href="#section-10-2.4.1" class="pilcrow">¶</a></p>
@@ -2035,6 +2067,9 @@ profile-token = 1*( ALPHA / DIGIT / "-" / "_" / "." )
 </li>
         <li class="normal" id="section-10-2.6">
           <p id="section-10-2.6.1"><span class="bcp14">SHOULD</span> treat Entity Profile values that are syntactically invalid (i.e., do not conform to the <code>profile-token</code> syntax in <a href="#representation-in-token-claims-and-metadata" class="auto internal xref">Section 3.3</a>) or that appear in a usage location not defined for that value in the registry as unrecognized, and apply policies accordingly.<a href="#section-10-2.6.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-10-2.7">
+          <p id="section-10-2.7.1"><span class="bcp14">MAY</span> reject a token containing a <code>client_profile</code> member within an <code>act</code> node or ignore the offending member for the purposes of authorization decisions.<a href="#section-10-2.7.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 <p id="section-10-3">This specification does not prescribe specific behaviors or policies for Resource Servers based on Entity Profiles. However, it encourages Resource Servers to use these Claims to strengthen security, enforce fine-grained policies, and improve user experience.<a href="#section-10-3" class="pilcrow">¶</a></p>
@@ -2091,8 +2126,8 @@ final_decision = evaluate_combined_policies(policies_to_apply, mode="most_restri
 <p id="section-11-4">The value of <code>sub_profile</code> within an <code>act</code> node, when included, <span class="bcp14">MUST</span> conform to the syntax defined in <a href="#representation-in-token-claims-and-metadata" class="auto internal xref">Section 3.3</a> and <span class="bcp14">MUST</span> use values from the OAuth Entity Profiles registry (<a href="#oauth-entity-profiles-registry" class="auto internal xref">Section 14.1</a>) with the "Actor Profile" usage location, or valid private Entity Profiles as defined in <a href="#private-or-custom-entity-profiles" class="auto internal xref">Section 3.2</a>.<a href="#section-11-4" class="pilcrow">¶</a></p>
 <p id="section-11-5">An <code>act</code> node can contain another <code>act</code> node, forming a chain that represents multiple hops of delegation. By including <code>sub_profile</code> in each <code>act</code> node, the Authorization Server can provide consistent classification of all entities involved in the delegation, enabling Resource Servers to make informed access control decisions based on the nature of each actor.<a href="#section-11-5" class="pilcrow">¶</a></p>
 <p id="section-11-6">The Authorization Server is responsible for constructing the <code>act</code> chain, validating subject tokens, and assigning appropriate <code>sub_profile</code> values based on its policies and the delegation context. The rules for these operations are expected to be defined in a separate specification focused on actor and delegation chains.<a href="#section-11-6" class="pilcrow">¶</a></p>
-<p id="section-11-7">If a Resource Server encounters an <code>act</code> node without a <code>sub_profile</code> Claim and the Authorization Server’s metadata indicates support for Actor Profiles through the <code>actor</code> array in <code>entity_profiles_supported</code>, the Resource Server <span class="bcp14">SHOULD</span> treat the acting entity as unclassified and apply conservative or default-deny policies consistent with <a href="#resource-server-behavior" class="auto internal xref">Section 10</a>. If the Authorization Server’s metadata does not declare support for Actor Profiles, the absence of <code>sub_profile</code> carries no normative significance under this specification.<a href="#section-11-7" class="pilcrow">¶</a></p>
-<p id="section-11-8">Below is a non-normative example of a multi-hop delegation chain where a user delegates to an AI agent, which in turn delegates to a backend service. Each <code>act</code> node includes a <code>sub_profile</code> Claim to classify the acting entity. Other standard <code>act</code> members such as <code>iss</code> are omitted for brevity:<a href="#section-11-8" class="pilcrow">¶</a></p>
+<p id="section-11-7">If a Resource Server encounters an <code>act</code> node without a <code>sub_profile</code> member, and the Authorization Server’s metadata indicates support for Actor Profiles through the <code>actor</code> array in <code>entity_profiles_supported</code>, the Resource Server <span class="bcp14">SHOULD</span> treat the acting entity as unclassified. Where local policy for the protected resource requires Actor Profile information, the Resource Server <span class="bcp14">SHOULD</span> apply conservative or default-deny policies consistent with <a href="#resource-server-behavior" class="auto internal xref">Section 10</a>. If the Authorization Server’s metadata does not declare support for Actor Profiles, the absence of <code>sub_profile</code> carries no normative significance under this specification.<a href="#section-11-7" class="pilcrow">¶</a></p>
+<p id="section-11-8">Below is a non-normative example of a multi-hop delegation chain where a user delegates to an AI agent, which in turn delegates to a backend service. Each <code>act</code> node includes a <code>sub_profile</code> member to classify the acting entity. Other standard <code>act</code> members such as <code>iss</code> are omitted for brevity:<a href="#section-11-8" class="pilcrow">¶</a></p>
 <div class="lang-json sourcecode" id="section-11-9">
 <pre>
 {
@@ -2140,7 +2175,7 @@ final_decision = evaluate_combined_policies(policies_to_apply, mode="most_restri
         <h3 id="name-entity-profiles-in-jwt-auth">
 <a href="#section-12.3" class="section-number selfRef">12.3. </a><a href="#name-entity-profiles-in-jwt-auth" class="section-name selfRef">Entity Profiles in JWT Authorization Grant Assertions</a>
         </h3>
-<p id="section-12.3-1">When Entity Profile Claims are conveyed in JWT authorization grant assertions <span>[<a href="#RFC7523" class="cite xref">RFC7523</a>]</span>, the Authorization Server receives classification information from an external issuer rather than from its own registration or authentication processes. This introduces additional trust considerations. Authorization Servers must not accept <code>sub_profile</code> values from JWT assertions at face value and should verify these values against independent knowledge of the subject or the issuer's attestation trustworthiness.<a href="#section-12.3-1" class="pilcrow">¶</a></p>
+<p id="section-12.3-1">When Entity Profile Claims are conveyed in JWT authorization grant assertions <span>[<a href="#RFC7523" class="cite xref">RFC7523</a>]</span>, the Authorization Server receives classification information from an external issuer rather than from its own registration or authentication processes. This introduces additional trust considerations. Authorization Servers must not accept <code>client_profile</code> or <code>sub_profile</code> values from JWT assertions at face value, and should verify these values against independent knowledge of the client or subject, or against the issuer's attestation trustworthiness.<a href="#section-12.3-1" class="pilcrow">¶</a></p>
 <p id="section-12.3-2">An attacker who compromises or forges a JWT assertion could include a misleading <code>sub_profile</code> value (e.g., <code>user</code> for a service account) to obtain access privileges not intended for the actual entity type. Authorization Servers should apply the same level of scrutiny to Entity Profile Claims in JWT assertions as they do to other assertion Claims such as <code>sub</code> and <code>aud</code>.<a href="#section-12.3-2" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -2206,7 +2241,8 @@ final_decision = evaluate_combined_policies(policies_to_apply, mode="most_restri
         <h3 id="name-actor-profile-verification-">
 <a href="#section-12.11" class="section-number selfRef">12.11. </a><a href="#name-actor-profile-verification-" class="section-name selfRef">Actor Profile Verification in Delegation Chains</a>
         </h3>
-<p id="section-12.11-1">When <code>sub_profile</code> values appear within <code>act</code> Claim nodes <span>[<a href="#RFC8693" class="cite xref">RFC8693</a>]</span>, they introduce additional classification assertions about acting entities in a delegation chain. Authorization Servers and Resource Servers must not trust <code>sub_profile</code> values in <code>act</code> nodes without verifying them against the issuing authority's knowledge of those entities. Unverified actor profiles may enable privilege escalation — for example, an attacker could craft a delegation chain where an inner <code>act</code> node claims <code>sub_profile</code> value of <code>"user"</code> when the actual actor is a <code>"service"</code>, potentially causing a Resource Server to apply user-level permissions to a service.<a href="#section-12.11-1" class="pilcrow">¶</a></p>
+<p id="section-12.11-1">When <code>sub_profile</code> values appear within <code>act</code> Claim nodes <span>[<a href="#RFC8693" class="cite xref">RFC8693</a>]</span>, they introduce additional classification assertions about acting entities in a delegation chain. Authorization Servers must not accept or issue <code>sub_profile</code> values in <code>act</code> nodes without verifying them against registration data, trusted issuer assertions, attestation evidence, or other policy inputs. Resource Servers must not trust <code>sub_profile</code> values in <code>act</code> nodes unless they are obtained from a trusted Authorization Server and the token or introspection response has been validated according to the applicable OAuth and JWT requirements.<a href="#section-12.11-1" class="pilcrow">¶</a></p>
+<p id="section-12.11-2">Unverified actor profiles may enable privilege escalation; for example, an attacker could craft a delegation chain where an inner <code>act</code> node claims a <code>sub_profile</code> value of <code>"user"</code> when the actual actor is a <code>"service"</code>, potentially causing a Resource Server to apply user-level permissions to a service.<a href="#section-12.11-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="delegation-chain-depth">
@@ -2222,7 +2258,7 @@ final_decision = evaluate_combined_policies(policies_to_apply, mode="most_restri
         <h3 id="name-confused-deputy-risk-in-del">
 <a href="#section-12.13" class="section-number selfRef">12.13. </a><a href="#name-confused-deputy-risk-in-del" class="section-name selfRef">Confused Deputy Risk in Delegation</a>
         </h3>
-<p id="section-12.13-1">When a token carries both a top-level <code>sub_profile</code> and a different <code>sub_profile</code> within an <code>act</code> node (e.g., <code>sub_profile</code> of <code>"user"</code> at the top level and <code>sub_profile</code> of <code>"ai_agent"</code> in <code>act</code>), Resource Servers must evaluate both classifications when making authorization decisions. Relying on only one of these values without considering the other may lead to a confused deputy scenario where the acting entity obtains access beyond what the delegation context warrants.<a href="#section-12.13-1" class="pilcrow">¶</a></p>
+<p id="section-12.13-1">When a token carries both a top-level <code>sub_profile</code> and a different <code>sub_profile</code> within an <code>act</code> node (e.g., a top-level <code>sub_profile</code> of <code>"user"</code> and an <code>act</code> <code>sub_profile</code> of <code>"ai_agent"</code>), Resource Servers that use Entity Profiles in authorization decisions must consider the delegation context and must not treat the top-level <code>sub_profile</code> as fully describing the active actor. Relying only on the top-level subject classification can lead to a confused deputy scenario where the acting entity obtains access beyond what the delegation context warrants.<a href="#section-12.13-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2310,6 +2346,7 @@ final_decision = evaluate_combined_policies(policies_to_apply, mode="most_restri
               <p id="section-14.1.1-2.5.1">Specification Document: A stable URL or RFC that defines the semantics and use of the value.<a href="#section-14.1.1-2.5.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
+<p id="section-14.1.1-3">Designated Experts reviewing registration requests <span class="bcp14">SHOULD</span> verify that the proposed Entity Profile Name is clearly defined and appropriate for its declared Usage Location. For registrations that include the "Actor Profile" Usage Location, Designated Experts <span class="bcp14">SHOULD</span> verify that the value describes a type of acting entity relevant to OAuth delegation scenarios and is suitable for use as a <code>sub_profile</code> value within an <code>act</code> object.<a href="#section-14.1.1-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="initial-registry-contents">
@@ -2555,7 +2592,7 @@ final_decision = evaluate_combined_policies(policies_to_apply, mode="most_restri
               <p id="section-14.3.1-1.1.1">Metadata Name: entity_profiles_supported<a href="#section-14.3.1-1.1.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-14.3.1-1.2">
-              <p id="section-14.3.1-1.2.1">Metadata Description: JSON object containing up to three JSON arrays (<code>client</code>, <code>subject</code>, and <code>actor</code>) listing the Entity Profiles supported.<a href="#section-14.3.1-1.2.1" class="pilcrow">¶</a></p>
+              <p id="section-14.3.1-1.2.1">Metadata Description: JSON object containing JSON arrays (<code>client</code>, <code>subject</code>, and <code>actor</code>) listing the Entity Profiles supported.<a href="#section-14.3.1-1.2.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-14.3.1-1.3">
               <p id="section-14.3.1-1.3.1">Change Controller: IESG<a href="#section-14.3.1-1.3.1" class="pilcrow">¶</a></p>
@@ -2660,6 +2697,10 @@ final_decision = evaluate_combined_policies(policies_to_apply, mode="most_restri
 <a href="#section-15.1" class="section-number selfRef">15.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
         </h3>
 <dl class="references">
+<dt id="I-D.ietf-oauth-transaction-tokens">[I-D.ietf-oauth-transaction-tokens]</dt>
+        <dd>
+<span class="refTitle">"Transaction Tokens"</span>, <time datetime="2026-03" class="refDate">March 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-oauth-transaction-tokens">https://datatracker.ietf.org/doc/html/draft-ietf-oauth-transaction-tokens</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="OIDC">[OIDC]</dt>
         <dd>
 <span class="refTitle">"OpenID Connect Core 1.0"</span>, <time datetime="2023-12" class="refDate">December 2023</time>, <span>&lt;<a href="https://openid.net/specs/openid-connect-core-1_0.html">https://openid.net/specs/openid-connect-core-1_0.html</a>&gt;</span>. </dd>
@@ -2966,7 +3007,7 @@ final_decision = evaluate_combined_policies(policies_to_apply, mode="most_restri
 <div dir="auto" class="left"><span class="org">Independent</span></div>
 <div class="email">
 <span>Email:</span>
-<a href="mailto:me@karlmcguinness.com" class="email">me@karlmcguinness.com</a>
+<a href="mailto:public@karlmcguinness.com" class="email">public@karlmcguinness.com</a>
 </div>
 </address>
 </section>

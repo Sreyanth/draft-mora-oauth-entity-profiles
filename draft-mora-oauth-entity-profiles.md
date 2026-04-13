@@ -39,7 +39,7 @@ author:
  -
     fullname: "Karl McGuinness"
     organization: "Independent"
-    email: "me@karlmcguinness.com"
+    email: "public@karlmcguinness.com"
 
 normative:
   RFC5234:
@@ -56,12 +56,16 @@ normative:
     title: "OpenID Connect Core 1.0"
     target: "https://openid.net/specs/openid-connect-core-1_0.html"
     date: "December 2023"
+  I-D.ietf-oauth-transaction-tokens:
+    title: "Transaction Tokens"
+    target: "https://datatracker.ietf.org/doc/html/draft-ietf-oauth-transaction-tokens"
+    date: "March 2026"
 informative:
   RFC8628:
 
 --- abstract
 
-This specification introduces Entity Profiles as a mechanism to categorize OAuth 2.0 entities—clients and subjects—based on their operational context. Entity Profiles provide structured descriptors for the client initiating the OAuth flow and the subject represented in tokens. This document defines new JWT Claim names and metadata parameters for use in access tokens, ID tokens, JWT authorization grant assertions, token introspection responses, dynamic client registration, and Authorization Server metadata. It also defines vocabulary for classifying acting entities within delegation chains.
+This specification introduces Entity Profiles as a mechanism to categorize OAuth 2.0 entities—clients and subjects—based on their operational context. Entity Profiles provide structured descriptors for the client initiating the OAuth flow and the subject represented in tokens. This document defines new JWT Claim names and metadata parameters for use in JWTs issued or consumed in OAuth flows, including but not limited to access tokens, ID tokens, JWT authorization grant assertions, and transaction tokens, as well as in token introspection responses, dynamic client registration, and Authorization Server metadata. It also defines vocabulary for classifying acting entities within delegation chains.
 
 --- middle
 
@@ -74,7 +78,7 @@ This specification introduces two new Claims:
 - `client_profile`: Describes the nature of the client software or application initiating the OAuth flow (e.g., web app, native app, AI agent).
 - `sub_profile`: Describes the entity represented by the subject (`sub`) Claim in an issued token (e.g., user, service, AI agent).
 
-This specification establishes a registry for OAuth Entity Profiles and defines an initial set of Entity Profile values. This document also defines how the Entity Profiles can be used in access tokens, ID tokens, JWT authorization grant assertions, token introspection responses, dynamic client registration, and Authorization Server metadata.
+This specification establishes a registry for OAuth Entity Profiles and defines an initial set of Entity Profile values. This document also defines how the Entity Profiles can be used in any JWT issued or consumed in OAuth flows, including but not limited to access tokens, ID tokens, JWT authorization grant assertions, and transaction tokens, as well as in token introspection responses, dynamic client registration, and Authorization Server metadata.
 
 This specification also defines the use of Entity Profiles in delegation scenarios through the `act` Claim {{RFC8693}}, introducing the concept of an Actor Profile to classify acting entities. By applying the same Entity Profile vocabulary to each actor in a delegation chain, this approach enables consistent classification of entities across both direct and delegated access contexts.
 
@@ -178,15 +182,17 @@ All profile values MUST either:
 - Be registered in the OAuth Entity Profiles IANA registry (see [](#oauth-entity-profiles-registry)), or
 - Be privately defined (see [](#private-or-custom-entity-profiles)).
 
-When processing these values, Authorization Servers and Resource Servers MUST NOT assume any implicit relationships or hierarchies between the Entity Profiles unless explicitly agreed upon by the Authorization Server and the Resource Server or if defined in a different specification. Entity Profiles are also orthogonal to the client's confidentiality classification (public or confidential) as defined in {{Section 2.1 of RFC6749}}; the same Entity Profile value may apply to both public and confidential clients.
+When processing these values, Authorization Servers and Resource Servers MUST NOT assume any implicit relationships or hierarchies between the Entity Profiles unless explicitly agreed upon by the Authorization Server and the Resource Server or if defined in a different specification.
 
-Authorization Servers that process tokens containing Entity Profile values they do not recognize SHOULD preserve those values unchanged when producing derived tokens (e.g., during token exchange or delegation). This allows unrecognized profiles to be propagated through the token chain, enabling Resource Servers that do recognize those profiles to make informed decisions based on them.
+Entity Profiles are orthogonal to the OAuth 2.0 client type (public or confidential) as defined in {{Section 2.1 of RFC6749}}. The client type classifies a client based on its ability to maintain credential confidentiality. The same Entity Profile value may apply to both public and confidential clients.
+
+Authorization Servers that process tokens containing syntactically valid Entity Profile values whose semantics they do not understand locally SHOULD preserve those values unchanged when producing derived tokens, provided the values are registered for the applicable usage location or are valid private Entity Profiles. Authorization Servers MUST NOT preserve values that are syntactically invalid or invalid for the applicable usage location.
 
 For example, a token might include the Entity Profiles `ai_agent acme_verified_robot`, where `acme_verified_robot` is a vendor-defined profile used to identify industrial automation clients from ACME Corp. These two profiles are independent — the presence of both does not imply that one is a subtype of the other, nor that they share privilege or trust levels. Treating `acme_verified_robot` as a subclass of `ai_agent`, or vice versa, could result in incorrect access decisions.
 
 # Entity Profile JWT Claims
 
-This specification defines two new Claim Names: `client_profile` and `sub_profile`. These Claims may appear in JWTs like JWT access tokens {{RFC9068}} and OpenID Connect ID tokens {{OIDC}} issued by the Authorization Server, as well as in JWT authorization grant assertions {{RFC7523}} presented to the token endpoint. These Claims may be included in any other JWTs issued or used in OAuth flows.
+This specification defines two new Claim Names: `client_profile` and `sub_profile`. These Claims may appear in JWTs like JWT access tokens {{RFC9068}}, OpenID Connect ID tokens {{OIDC}}, and Transaction Tokens {{I-D.ietf-oauth-transaction-tokens}}, as well as in JWT authorization grant assertions {{RFC7523}} presented to the token endpoint. These Claims may be included in any other JWTs issued or used in OAuth flows.
 
 ## `client_profile` Claim
 
@@ -196,7 +202,7 @@ The `client_profile` (Client Profile) Claim indicates the Entity Profile(s) of t
 
 The `sub_profile` (Subject Profile) Claim indicates the Entity Profile(s) of the Subject represented by the `sub` (Subject) Claim in a JWT. If included, the value of this Claim MUST conform to the rules defined in [](#representation-in-token-claims-and-metadata). Use of this Claim is OPTIONAL.
 
-The `sub_profile` Claim also appears within `act` (Actor) Claim nodes {{RFC8693}} to identify the Entity Profile of the acting entity at each step in a delegation chain. This allows acting entities in delegation scenarios to be classified using the same Entity Profile vocabulary. The value MUST conform to the same syntax and registry requirements defined in [](#representation-in-token-claims-and-metadata).
+The `sub_profile` Claim MAY also appear within `act` (Actor) Claim nodes {{RFC8693}} to identify the Entity Profile of the acting entity at each step in a delegation chain. This allows acting entities in delegation scenarios to be classified using the same Entity Profile vocabulary. The value MUST conform to the same syntax and registry requirements defined in [](#representation-in-token-claims-and-metadata).
 
 Below is a non-normative example illustrating how the new Entity Profile Claims can appear within a JWT access token. Other standard Claims are omitted for brevity:
 
@@ -229,11 +235,11 @@ Below is a non-normative example illustrating how `sub_profile` appears within a
 If an Authorization Server supports publishing metadata as defined in {{RFC8414}} and also implements the mechanisms defined in this specification, it SHOULD advertise its support for the mechanisms defined in this specification using the following metadata parameter in its Authorization Server Metadata document:
 
 "entity_profiles_supported":
-: OPTIONAL. JSON object containing up to three members: `client`, `subject`, and `actor`, each a JSON array of supported Entity Profiles. The `client` array lists Entity Profiles supported for client classification. The `subject` array lists Entity Profiles supported for subject classification.
+: OPTIONAL. JSON object containing members: `client`, `subject`, and `actor`, each a JSON array of supported Entity Profiles. The `client` array lists Entity Profiles supported for client classification. The `subject` array lists Entity Profiles supported for subject classification.
 
-  The `actor` array, if present, lists Entity Profiles supported for use in `sub_profile` Claims within `act` nodes {{RFC8693}}. Its absence indicates that no support for delegation contexts is declared.
+  The `actor` array, if present, lists Entity Profiles that the Authorization Server recognizes and will validate when they appear as `sub_profile` values within `act` nodes {{RFC8693}} in inbound tokens, actor assertions, or issued tokens. Actors whose `sub_profile` values are not listed in this array MAY be rejected by the Authorization Server. Its absence indicates that no support for Actor Profile usage in delegation contexts is declared.
 
-  Authorization Servers SHOULD include all supported profiles in each array but MAY omit some supported profiles from this metadata if desired. Values in the `actor` array need not match those in the `subject` array, as an Authorization Server may support different profiles for different contexts. Empty arrays MUST NOT be included, and members with no values SHOULD be omitted. When entity_profiles_supported is present, it MUST include at least one of client or subject, and that member MUST contain at least one value. If no Entity Profiles are supported, the entire parameter SHOULD be omitted.
+  Authorization Servers SHOULD include all supported profiles in each array but MAY omit some supported profiles from this metadata if desired. Values in the `actor` array need not match those in the `subject` array, as an Authorization Server may support different profiles for different contexts. Empty arrays MUST NOT be included, and members with no values SHOULD be omitted. When entity_profiles_supported is present, it MUST include at least one of client, subject, or actor, and that member MUST contain at least one value. If no Entity Profiles are supported, the entire parameter SHOULD be omitted.
 
 Clients can use this metadata to determine which Entity Profiles the Authorization Server recognizes, to understand how their own Entity Profiles might be interpreted or classified, and to determine whether the Authorization Server supports Entity Profiles in delegated access scenarios. Receivers encountering an empty array for any key SHOULD treat it as equivalent to the key being absent.
 
@@ -287,12 +293,12 @@ Below is an example of how the Authorization Server's registration response migh
 If an Authorization Server supports Token Introspection as defined in {{RFC7662}} and also implements the mechanisms defined in this specification, it SHOULD include the following parameters in its introspection responses:
 
 "sub_profile":
-: OPTIONAL. The Entity Profile of the resource owner identified by the `sub` Claim associated with the access token.
+: OPTIONAL. The Entity Profile of the resource owner identified by the `sub` Claim associated with the token.
 
 "client_profile":
-: OPTIONAL. The Entity Profile of the client identified by the `client_id` Claim associated with the access token.
+: OPTIONAL. The Entity Profile of the client identified by the `client_id` Claim associated with the token.
 
-When the introspection response includes the `act` parameter as defined in {{RFC8693}}, the `sub_profile` Claim SHOULD appear within `act` nodes to classify acting entities when the Authorization Server has assigned one.
+When the introspection response includes the `act` parameter as defined in {{RFC8693}}, the Authorization Server SHOULD include a `sub_profile` member within `act` objects, using the same syntax and semantics as the `sub_profile` Claim, to classify acting entities when it has assigned an Actor Profile.
 
 The following is a non-normative example of how these parameters might appear in a token introspection response for a direct (non-delegated) access context. Other standard parameters are omitted for brevity:
 
@@ -365,15 +371,15 @@ The client’s declared profile or request parameters MUST NOT directly influenc
 Authorization Servers implementing this specification:
 
 - MAY include `sub_profile` and `client_profile` Claims in access tokens and ID tokens, according to their policies and client registration metadata. When included, these Claims MUST conform to the rules defined in [](#representation-in-token-claims-and-metadata).
-- SHOULD only issue Entity Profile values in their registered usage locations as defined in the OAuth Entity Profiles registry ([](#oauth-entity-profiles-registry)).
+- SHOULD issue registered Entity Profile values only in the usage locations defined for those values in the OAuth Entity Profiles registry ([](#oauth-entity-profiles-registry)), such as `client_profile`, top-level `sub_profile`, or `sub_profile` within `act` nodes. Private Entity Profile values SHOULD be issued only in usage contexts consistent with their private definitions.
 - MAY automatically include Entity Profile Claims for certain categories of clients, such as always providing `client_profile` for autonomous AI agent clients.
 - SHOULD include these Claims when explicitly requested by clients through supported mechanisms (e.g., OpenID Connect Claims parameter {{OIDC}}, specific scope requests).
 - SHOULD populate these Claims consistently using verified Entity Profile information obtained during client registration or other trusted validation methods.
 - When issuing refreshed or exchanged tokens, Authorization Servers SHOULD re-evaluate the Entity Profiles and update them if context or identity has changed. Entity Profiles MUST NOT be assumed to persist across sessions without validation.
 
-This specification does not prescribe how clients request Entity Profile Claims. In practice, Authorization Servers may enforce the inclusion of these Claims, especially for high-risk or privileged profiles such as AI agents, to ensure consistent and secure policy enforcement. For other entity profiles, to reduce token size and privacy exposure, Claims may be omitted by default and included only when explicitly requested. This approach balances the need for security and efficient token management, while preventing clients from arbitrarily adding or omitting Entity Profile information to manipulate access control decisions.
+This specification does not prescribe how clients request Entity Profile Claims, but it is expected that existing mechanisms will be re-used. Future extensions may define additional request mechanisms along with any associated rejection rules and error handling. In practice, Authorization Servers may enforce the inclusion of these Claims by default, especially for high-risk or privileged profiles such as AI agents, to ensure consistent and secure policy enforcement. For other entity profiles, to reduce token size and privacy exposure, Claims may be omitted by default and included only when explicitly requested. This approach balances the need for security and efficient token management, while preventing clients from arbitrarily adding or omitting Entity Profile information to manipulate access control decisions.
 
-In OpenID Connect deployments, clients MAY use the `claims` request parameter {{OIDC}} to request Entity Profile Claims. The following is a non-normative example of requesting both `client_profile` and `sub_profile` in an access token:
+As an example, in OpenID Connect deployments, clients may use the `claims` request parameter {{OIDC}} to request Entity Profile Claims. The following is a non-normative example of requesting both `client_profile` and `sub_profile` in an access token:
 
 ~~~json
 {
@@ -395,7 +401,7 @@ Authorization Servers implementing this specification:
 
 Authorization Servers:
 
-1. MUST verify that Entity Profile values are either registered in the OAuth Entity Profiles registry or follow proper namespaced private conventions per the rules defined in [](#representation-in-token-claims-and-metadata).
+1. MUST verify that Entity Profile values conform to the syntax in [](#representation-in-token-claims-and-metadata) and are either registered in the OAuth Entity Profiles registry for the applicable usage location or are valid private Entity Profiles used in a context consistent with their private definitions.
 2. SHOULD ensure that Entity Profile assignments are trustworthy and not based solely on unverified self-assertion. The mechanisms for these verifications are out of scope for this specification, but it is recommended that Authorization Servers implement appropriate checks based on their security policies and operational context.
 3. MUST enforce authentication assurance and policy requirements appropriate to the Entity Profile.
 
@@ -405,6 +411,7 @@ If validation fails during:
 - **Token issuance**: Servers MAY refuse to issue tokens or omit the invalid profile Claims.
 - **Token introspection**: Servers SHOULD ensure introspection results match stored profile metadata and MUST NOT fabricate or guess unknown profiles.
 - **JWT authorization grant processing**: Servers SHOULD return `invalid_grant` as defined in {{Section 3.1 of RFC7523}} if the assertion contains syntactically invalid or unrecognized Entity Profile values.
+- **Token exchange**: When processing inbound tokens or assertions (e.g., `subject_token` or `actor_token` in {{RFC8693}}), Authorization Servers SHOULD validate Entity Profile Claims in the presented tokens and MAY reject the exchange request if the values are invalid, unrecognized, or conflict with local policy.
 
 Clear, actionable error responses MUST be returned in accordance with OAuth and OpenID Connect error handling frameworks.
 
@@ -414,16 +421,27 @@ Authorization Servers MAY:
 2. Incorporate Entity Profiles into rate limiting and other risk-based controls.
 3. Return clear, descriptive error messages if Entity Profile validation fails.
 
+## Consuming Tokens and Assertions
+
+When an Authorization Server consumes tokens or assertions containing Entity Profile Claims, such as during token exchange {{RFC8693}} or JWT authorization grant processing {{RFC7523}}, it acts in a role analogous to a Resource Server with respect to evaluating those Claims. In addition to the validation requirements defined in [](#validation-requirements), Authorization Servers in this context:
+
+- SHOULD use Entity Profile Claims in the presented tokens and assertions to inform authorization and policy decisions for the requested operation.
+- MUST NOT interpret or infer additional meaning beyond the profile's definition.
+- SHOULD treat Entity Profile values that are syntactically invalid or that appear in a usage location not defined for that value in the registry as unrecognized, and apply policies accordingly.
+- MAY reject a token containing a `client_profile` member within an `act` node or ignore the offending member for the purposes of authorization decisions.
+- MUST NOT preserve values that are syntactically invalid or invalid for the applicable usage location.
+
 # Resource Server Behavior
 
 Resource Servers handling tokens with Entity Profile Claims:
 
 - SHOULD use `sub_profile` and `client_profile` Claims to inform access control decisions and apply appropriate policies.
-- SHOULD apply conservative or default-deny policies when `entity_profiles_supported` is advertised and Entity Profile Claims are missing, unrecognized, or have unknown semantics.
-- SHOULD NOT penalize tokens for missing Entity Profile Claims when `entity_profiles_supported` is not advertised.
+- SHOULD apply conservative or default-deny policies when Entity Profile Claims are missing, unrecognized, or have unknown semantics for the usage location that the Authorization Server has advertised support for in `entity_profiles_supported`. For example, if the `subject` array is present in `entity_profiles_supported` but `sub_profile` is absent from a token, the Resource Server SHOULD apply conservative policies for subject classification.
+- SHOULD NOT penalize tokens for missing Entity Profile Claims for unadvertised usage locations.
 - MAY log Entity Profile information for auditing, monitoring, and anomaly detection purposes.
 - MUST NOT interpret or infer additional meaning beyond the profile's definition.
 - SHOULD treat Entity Profile values that are syntactically invalid (i.e., do not conform to the `profile-token` syntax in [](#representation-in-token-claims-and-metadata)) or that appear in a usage location not defined for that value in the registry as unrecognized, and apply policies accordingly.
+- MAY reject a token containing a `client_profile` member within an `act` node or ignore the offending member for the purposes of authorization decisions.
 
 This specification does not prescribe specific behaviors or policies for Resource Servers based on Entity Profiles. However, it encourages Resource Servers to use these Claims to strengthen security, enforce fine-grained policies, and improve user experience.
 
@@ -480,9 +498,9 @@ An `act` node can contain another `act` node, forming a chain that represents mu
 
 The Authorization Server is responsible for constructing the `act` chain, validating subject tokens, and assigning appropriate `sub_profile` values based on its policies and the delegation context. The rules for these operations are expected to be defined in a separate specification focused on actor and delegation chains.
 
-If a Resource Server encounters an `act` node without a `sub_profile` Claim and the Authorization Server’s metadata indicates support for Actor Profiles through the `actor` array in `entity_profiles_supported`, the Resource Server SHOULD treat the acting entity as unclassified and apply conservative or default-deny policies consistent with [](#resource-server-behavior). If the Authorization Server’s metadata does not declare support for Actor Profiles, the absence of `sub_profile` carries no normative significance under this specification.
+If a Resource Server encounters an `act` node without a `sub_profile` member, and the Authorization Server’s metadata indicates support for Actor Profiles through the `actor` array in `entity_profiles_supported`, the Resource Server SHOULD treat the acting entity as unclassified. Where local policy for the protected resource requires Actor Profile information, the Resource Server SHOULD apply conservative or default-deny policies consistent with [](#resource-server-behavior). If the Authorization Server’s metadata does not declare support for Actor Profiles, the absence of `sub_profile` carries no normative significance under this specification.
 
-Below is a non-normative example of a multi-hop delegation chain where a user delegates to an AI agent, which in turn delegates to a backend service. Each `act` node includes a `sub_profile` Claim to classify the acting entity. Other standard `act` members such as `iss` are omitted for brevity:
+Below is a non-normative example of a multi-hop delegation chain where a user delegates to an AI agent, which in turn delegates to a backend service. Each `act` node includes a `sub_profile` member to classify the acting entity. Other standard `act` members such as `iss` are omitted for brevity:
 
 ~~~json
 {
@@ -515,7 +533,7 @@ Implementations are encouraged to monitor client behavior for consistency with t
 
 ## Entity Profiles in JWT Authorization Grant Assertions
 
-When Entity Profile Claims are conveyed in JWT authorization grant assertions {{RFC7523}}, the Authorization Server receives classification information from an external issuer rather than from its own registration or authentication processes. This introduces additional trust considerations. Authorization Servers must not accept `sub_profile` values from JWT assertions at face value and should verify these values against independent knowledge of the subject or the issuer's attestation trustworthiness.
+When Entity Profile Claims are conveyed in JWT authorization grant assertions {{RFC7523}}, the Authorization Server receives classification information from an external issuer rather than from its own registration or authentication processes. This introduces additional trust considerations. Authorization Servers must not accept `client_profile` or `sub_profile` values from JWT assertions at face value, and should verify these values against independent knowledge of the client or subject, or against the issuer's attestation trustworthiness.
 
 An attacker who compromises or forges a JWT assertion could include a misleading `sub_profile` value (e.g., `user` for a service account) to obtain access privileges not intended for the actual entity type. Authorization Servers should apply the same level of scrutiny to Entity Profile Claims in JWT assertions as they do to other assertion Claims such as `sub` and `aud`.
 
@@ -551,7 +569,9 @@ Entity Profile Claims can increase the size of JWT access tokens or ID tokens, e
 
 ## Actor Profile Verification in Delegation Chains
 
-When `sub_profile` values appear within `act` Claim nodes {{RFC8693}}, they introduce additional classification assertions about acting entities in a delegation chain. Authorization Servers and Resource Servers must not trust `sub_profile` values in `act` nodes without verifying them against the issuing authority's knowledge of those entities. Unverified actor profiles may enable privilege escalation — for example, an attacker could craft a delegation chain where an inner `act` node claims `sub_profile` value of `"user"` when the actual actor is a `"service"`, potentially causing a Resource Server to apply user-level permissions to a service.
+When `sub_profile` values appear within `act` Claim nodes {{RFC8693}}, they introduce additional classification assertions about acting entities in a delegation chain. Authorization Servers must not accept or issue `sub_profile` values in `act` nodes without verifying them against registration data, trusted issuer assertions, attestation evidence, or other policy inputs. Resource Servers must not trust `sub_profile` values in `act` nodes unless they are obtained from a trusted Authorization Server and the token or introspection response has been validated according to the applicable OAuth and JWT requirements.
+
+Unverified actor profiles may enable privilege escalation; for example, an attacker could craft a delegation chain where an inner `act` node claims a `sub_profile` value of `"user"` when the actual actor is a `"service"`, potentially causing a Resource Server to apply user-level permissions to a service.
 
 ## Delegation Chain Depth
 
@@ -559,7 +579,7 @@ Deeply nested `act` chains can contain many `sub_profile` values, increasing tok
 
 ## Confused Deputy Risk in Delegation
 
-When a token carries both a top-level `sub_profile` and a different `sub_profile` within an `act` node (e.g., `sub_profile` of `"user"` at the top level and `sub_profile` of `"ai_agent"` in `act`), Resource Servers must evaluate both classifications when making authorization decisions. Relying on only one of these values without considering the other may lead to a confused deputy scenario where the acting entity obtains access beyond what the delegation context warrants.
+When a token carries both a top-level `sub_profile` and a different `sub_profile` within an `act` node (e.g., a top-level `sub_profile` of `"user"` and an `act` `sub_profile` of `"ai_agent"`), Resource Servers that use Entity Profiles in authorization decisions must consider the delegation context and must not treat the top-level `sub_profile` as fully describing the active actor. Relying only on the top-level subject classification can lead to a confused deputy scenario where the acting entity obtains access beyond what the delegation context warrants.
 
 # Privacy Considerations
 
@@ -602,6 +622,8 @@ Each registry entry MUST include:
 - Usage Location: The location(s) where the Entity Profile can be used. The possible locations are "Subject Profile", "Client Profile", and "Actor Profile".
 - Change Controller: The party responsible for the definition (e.g., IESG).
 - Specification Document: A stable URL or RFC that defines the semantics and use of the value.
+
+Designated Experts reviewing registration requests SHOULD verify that the proposed Entity Profile Name is clearly defined and appropriate for its declared Usage Location. For registrations that include the "Actor Profile" Usage Location, Designated Experts SHOULD verify that the value describes a type of acting entity relevant to OAuth delegation scenarios and is suitable for use as a `sub_profile` value within an `act` object.
 
 ### Initial Registry Contents
 
@@ -686,7 +708,7 @@ IANA is requested to register the following fields in the "OAuth Authorization S
 ### `entity_profiles_supported`
 
 - Metadata Name: entity_profiles_supported
-- Metadata Description: JSON object containing up to three JSON arrays (`client`, `subject`, and `actor`) listing the Entity Profiles supported.
+- Metadata Description: JSON object containing JSON arrays (`client`, `subject`, and `actor`) listing the Entity Profiles supported.
 - Change Controller: IESG
 - Specification Document: [](#authorization-server-metadata) of this document.
 

@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-04-12T00:38:38.449659+00:00",
+  "timestamp": "2026-04-14T00:40:55.328747+00:00",
   "repo": "Sreyanth/draft-mora-oauth-entity-profiles",
   "labels": [
     {
@@ -89,13 +89,13 @@
       "labels": [],
       "body": "Changes introduced in draft-01:\r\n\r\n- Introduced Actor Profiles to classify acting entities in delegation contexts\r\n- Extended Entity Profile use to JWT authorization grant assertions\r\n- Added Karl McGuinness as co-author\r\n- Clarified DCR behavior when the AS modifies or omits a requested client_profile\r\n- Refined RS behavior to condition enforcement on entity_profiles_supported advertisement\r\n- Editorial refinements to definitions and examples\r\n\r\nThis is a follow-up after reviewing #1 and the latest draft from Karl (https://mcguinness.github.io/draft-mcguinness-oauth-actor-profile/draft-mcguinness-oauth-actor-profile.html) to absorb the vocabulary layer for Actor Profiles into the Entity Profiles draft.",
       "createdAt": "2026-04-06T08:13:36Z",
-      "updatedAt": "2026-04-07T04:15:37Z",
+      "updatedAt": "2026-04-13T03:29:23Z",
       "baseRepository": "Sreyanth/draft-mora-oauth-entity-profiles",
       "baseRefName": "main",
       "baseRefOid": "4089e133bbee24d05f2f696155b92a9c6cb36420",
       "headRepository": "Sreyanth/draft-mora-oauth-entity-profiles",
       "headRefName": "actor-profiles-for-delegation",
-      "headRefOid": "d03dbab71eba718111b3265fafe16b6c69df548b",
+      "headRefOid": "a94fd8f56f80ca74dc349f5d836692e79ea435a9",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
@@ -287,6 +287,452 @@
               "body": "```suggestion\n  Authorization Servers SHOULD include all supported profiles in each array but MAY omit some supported profiles from this metadata if desired. Values in the `actor` array need not match those in the `subject` array, as an Authorization Server may support different profiles for different contexts. Empty arrays MUST NOT be included, and members with no values SHOULD be omitted. When entity_profiles_supported is present, it MUST include at least one of client, subject, or actor, and that member MUST contain at least one value. If no Entity Profiles are supported, the entire parameter SHOULD be omitted.\n```",
               "createdAt": "2026-04-07T04:14:17Z",
               "updatedAt": "2026-04-07T04:15:38Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOQACHtc70IdUz",
+          "commit": {
+            "abbreviatedOid": "d03dbab"
+          },
+          "author": "Sreyanth",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-04-12T23:40:02Z",
+          "updatedAt": "2026-04-12T23:40:02Z",
+          "comments": [
+            {
+              "originalPosition": 16,
+              "body": "Done.",
+              "createdAt": "2026-04-12T23:40:02Z",
+              "updatedAt": "2026-04-12T23:40:02Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOQACHtc70IgCF",
+          "commit": {
+            "abbreviatedOid": "d03dbab"
+          },
+          "author": "Sreyanth",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-04-12T23:51:45Z",
+          "updatedAt": "2026-04-12T23:51:45Z",
+          "comments": [
+            {
+              "originalPosition": 40,
+              "body": "Yep, done. ",
+              "createdAt": "2026-04-12T23:51:45Z",
+              "updatedAt": "2026-04-12T23:51:45Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOQACHtc70Ii7T",
+          "commit": {
+            "abbreviatedOid": "d03dbab"
+          },
+          "author": "Sreyanth",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-04-13T00:02:59Z",
+          "updatedAt": "2026-04-13T00:02:59Z",
+          "comments": [
+            {
+              "originalPosition": 104,
+              "body": "Yes, that's fair. Wanted to say that it classifies based on their ability to maintain credential confidentiality, but not in so many words (but the draft is already long, my bad!). I updated the text to incorporate your feedback.",
+              "createdAt": "2026-04-13T00:02:59Z",
+              "updatedAt": "2026-04-13T00:02:59Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOQACHtc70IoJ3",
+          "commit": {
+            "abbreviatedOid": "d03dbab"
+          },
+          "author": "Sreyanth",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-04-13T00:16:41Z",
+          "updatedAt": "2026-04-13T00:16:41Z",
+          "comments": [
+            {
+              "originalPosition": 113,
+              "body": "Yep, added. I previously wrote this catch-all line: These Claims may be included in any other JWTs issued or used in OAuth flows.",
+              "createdAt": "2026-04-13T00:16:41Z",
+              "updatedAt": "2026-04-13T00:16:41Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOQACHtc70IocR",
+          "commit": {
+            "abbreviatedOid": "d03dbab"
+          },
+          "author": "Sreyanth",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-04-13T00:17:43Z",
+          "updatedAt": "2026-04-13T00:17:43Z",
+          "comments": [
+            {
+              "originalPosition": 125,
+              "body": "Done.",
+              "createdAt": "2026-04-13T00:17:43Z",
+              "updatedAt": "2026-04-13T00:17:43Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOQACHtc70Io9q",
+          "commit": {
+            "abbreviatedOid": "d03dbab"
+          },
+          "author": "Sreyanth",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-04-13T00:19:37Z",
+          "updatedAt": "2026-04-13T00:19:37Z",
+          "comments": [
+            {
+              "originalPosition": 154,
+              "body": "Aligned.",
+              "createdAt": "2026-04-13T00:19:37Z",
+              "updatedAt": "2026-04-13T00:19:37Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOQACHtc70IqfC",
+          "commit": {
+            "abbreviatedOid": "d03dbab"
+          },
+          "author": "Sreyanth",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-04-13T00:24:51Z",
+          "updatedAt": "2026-04-13T00:24:51Z",
+          "comments": [
+            {
+              "originalPosition": 158,
+              "body": "You're right -- this needn't be this strict. I thought it'd be unusual to support act.sub_profile without supporting sub_profile. But, on a second thought, it is totally possible that a server that handles only delegation / token exchange can only support actor profiles. Incorporated that into the text.",
+              "createdAt": "2026-04-13T00:24:51Z",
+              "updatedAt": "2026-04-13T00:24:51Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOQACHtc70Irh9",
+          "commit": {
+            "abbreviatedOid": "d03dbab"
+          },
+          "author": "Sreyanth",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-04-13T00:28:20Z",
+          "updatedAt": "2026-04-13T00:28:20Z",
+          "comments": [
+            {
+              "originalPosition": 180,
+              "body": "This isn't related to actor profiles. While working on this PR, I noticed that the DCR section could be tighter around how the AS handles client_profile values it recognizes but chooses not to apply based on local policy. This isn't introducing anything new, just clarifying how the AS can reuse whatever DCR already supports.\r\n\r\nThis change felt small enough to fold in here rather than a separate PR, but happy to split it out if you'd prefer to keep this PR focused strictly on actor profile changes. LMK",
+              "createdAt": "2026-04-13T00:28:20Z",
+              "updatedAt": "2026-04-13T00:28:20Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOQACHtc70Irnp",
+          "commit": {
+            "abbreviatedOid": "d03dbab"
+          },
+          "author": "Sreyanth",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-04-13T00:28:39Z",
+          "updatedAt": "2026-04-13T00:28:39Z",
+          "comments": [
+            {
+              "originalPosition": 205,
+              "body": "Yes, fair enough. Updated.",
+              "createdAt": "2026-04-13T00:28:39Z",
+              "updatedAt": "2026-04-13T00:28:39Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOQACHtc70Iry3",
+          "commit": {
+            "abbreviatedOid": "d03dbab"
+          },
+          "author": "Sreyanth",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-04-13T00:29:14Z",
+          "updatedAt": "2026-04-13T00:29:14Z",
+          "comments": [
+            {
+              "originalPosition": 209,
+              "body": "Yep, not just any JWT token, but any token that can be introspected. Updated.",
+              "createdAt": "2026-04-13T00:29:14Z",
+              "updatedAt": "2026-04-13T00:29:14Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOQACHtc70IxMv",
+          "commit": {
+            "abbreviatedOid": "d03dbab"
+          },
+          "author": "Sreyanth",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-04-13T00:45:52Z",
+          "updatedAt": "2026-04-13T00:45:52Z",
+          "comments": [
+            {
+              "originalPosition": 267,
+              "body": "Yes, included that.",
+              "createdAt": "2026-04-13T00:45:52Z",
+              "updatedAt": "2026-04-13T00:45:52Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOQACHtc70I1UY",
+          "commit": {
+            "abbreviatedOid": "d03dbab"
+          },
+          "author": "Sreyanth",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-04-13T00:55:29Z",
+          "updatedAt": "2026-04-13T00:55:29Z",
+          "comments": [
+            {
+              "originalPosition": 269,
+              "body": "That's a good question. I've seen the claims param used to request the top-level claims, but haven't seen nested claims being requested. Could it be something like this?\r\n\r\n```\r\n{\r\n  \"access_token\": {\r\n    \"client_profile\": null,\r\n    \"sub_profile\": null,\r\n    \"act\": {\r\n        \"sub_profile\": null\r\n    }\r\n  }\r\n}\r\n```\r\n\r\nNot sure if this is how it is done for `act`. Should we include the mechanisms for requesting actor profiles in delegation contexts in your draft (not sure what's the right place)?",
+              "createdAt": "2026-04-13T00:55:29Z",
+              "updatedAt": "2026-04-13T00:55:29Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOQACHtc70I89g",
+          "commit": {
+            "abbreviatedOid": "d03dbab"
+          },
+          "author": "Sreyanth",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-04-13T01:11:58Z",
+          "updatedAt": "2026-04-13T01:11:58Z",
+          "comments": [
+            {
+              "originalPosition": 302,
+              "body": "You're right. Thanks for catching this. That was the intent, but the language was too broad. Updated.",
+              "createdAt": "2026-04-13T01:11:58Z",
+              "updatedAt": "2026-04-13T01:11:58Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOQACHtc70I-o-",
+          "commit": {
+            "abbreviatedOid": "d03dbab"
+          },
+          "author": "Sreyanth",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-04-13T01:16:10Z",
+          "updatedAt": "2026-04-13T01:16:10Z",
+          "comments": [
+            {
+              "originalPosition": 326,
+              "body": "This change was done because of a change I introduced into the text.\r\n\r\n> Values SHOULD NOT be duplicated within a single Entity Profile list; receivers SHOULD ignore duplicate values.\r\n\r\nThis change also came out of a full re-read of the draft. Happy to split it out, or even not include this if you prefer -- but I think this is a fairly self-contained change",
+              "createdAt": "2026-04-13T01:16:10Z",
+              "updatedAt": "2026-04-13T01:16:10Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOQACHtc70JAlJ",
+          "commit": {
+            "abbreviatedOid": "d03dbab"
+          },
+          "author": "Sreyanth",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-04-13T01:21:21Z",
+          "updatedAt": "2026-04-13T01:21:21Z",
+          "comments": [
+            {
+              "originalPosition": 384,
+              "body": "Ack on including the `client_profile` -- updated the draft. I typically refrain from using normative keywords for considerations sections. I think we should include this in the AS behavior normative section as well (let me try).",
+              "createdAt": "2026-04-13T01:21:21Z",
+              "updatedAt": "2026-04-13T01:21:33Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOQACHtc70Jbrr",
+          "commit": {
+            "abbreviatedOid": "d03dbab"
+          },
+          "author": "Sreyanth",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-04-13T02:21:03Z",
+          "updatedAt": "2026-04-13T02:21:03Z",
+          "comments": [
+            {
+              "originalPosition": 90,
+              "body": "I think the AS and RS behavior sections do cover this to an extent. We should discuss more if something is missing and we can add that.",
+              "createdAt": "2026-04-13T02:21:03Z",
+              "updatedAt": "2026-04-13T02:21:03Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOQACHtc70JcOz",
+          "commit": {
+            "abbreviatedOid": "d03dbab"
+          },
+          "author": "Sreyanth",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-04-13T02:22:18Z",
+          "updatedAt": "2026-04-13T02:22:18Z",
+          "comments": [
+            {
+              "originalPosition": 298,
+              "body": "Added a section in AS behavior for this, we can make that better.",
+              "createdAt": "2026-04-13T02:22:18Z",
+              "updatedAt": "2026-04-13T02:22:18Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOQACHtc70JdKT",
+          "commit": {
+            "abbreviatedOid": "d03dbab"
+          },
+          "author": "Sreyanth",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-04-13T02:24:24Z",
+          "updatedAt": "2026-04-13T02:24:24Z",
+          "comments": [
+            {
+              "originalPosition": 448,
+              "body": "Done.",
+              "createdAt": "2026-04-13T02:24:24Z",
+              "updatedAt": "2026-04-13T02:24:24Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOQACHtc70JgMe",
+          "commit": {
+            "abbreviatedOid": "d03dbab"
+          },
+          "author": "Sreyanth",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-04-13T02:31:22Z",
+          "updatedAt": "2026-04-13T02:31:22Z",
+          "comments": [
+            {
+              "originalPosition": 409,
+              "body": "Accepted the suggestion, but made it non-normative (same as previous comment)",
+              "createdAt": "2026-04-13T02:31:22Z",
+              "updatedAt": "2026-04-13T02:31:22Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOQACHtc70JgUl",
+          "commit": {
+            "abbreviatedOid": "d03dbab"
+          },
+          "author": "Sreyanth",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-04-13T02:31:39Z",
+          "updatedAt": "2026-04-13T02:31:39Z",
+          "comments": [
+            {
+              "originalPosition": 417,
+              "body": "Same comment as above.",
+              "createdAt": "2026-04-13T02:31:39Z",
+              "updatedAt": "2026-04-13T02:31:39Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOQACHtc70JwVE",
+          "commit": {
+            "abbreviatedOid": "d03dbab"
+          },
+          "author": "mcguinness",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-04-13T03:04:42Z",
+          "updatedAt": "2026-04-13T03:04:42Z",
+          "comments": [
+            {
+              "originalPosition": 269,
+              "body": "> Authorization Servers may enforce the inclusion of these Claims\r\n\r\nThis should be enough to enable my draft to address when `act` entity profile claims are emitted.   We can resolve  this comment",
+              "createdAt": "2026-04-13T03:04:42Z",
+              "updatedAt": "2026-04-13T03:04:42Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOQACHtc70J300",
+          "commit": {
+            "abbreviatedOid": "a94fd8f"
+          },
+          "author": "mcguinness",
+          "authorAssociation": "NONE",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-04-13T03:20:39Z",
+          "updatedAt": "2026-04-13T03:29:23Z",
+          "comments": [
+            {
+              "originalPosition": 303,
+              "body": "\u201csyntactically invalid or unrecognized Entity Profile values\u201d is somewhat inconsistent with the more precise forward-compatibility rule at https://github.com/Sreyanth/draft-mora-oauth-entity-profiles/pull/2/changes#diff-61efdfa1a519216a9305b8c82baf958d68d5ff8a61e5d2d5a67b5d6e735f772cR189 which now says valid-but-locally-unknown values should generally be preserved if they are registered for the usage location or are valid private values.  \n\n\u201cUnrecognized\u201d here could be read to reject exactly the kind of extension/private values the earlier text tries to preserve. I\u2019d tighten this to reject syntactically invalid values, values invalid for the usage location, or values disallowed by local policy.\n\n```suggestion\n- **JWT authorization grant processing**: Servers SHOULD return `invalid_grant` as defined in {{Section 3.1 of RFC7523}} if the assertion contains syntactically invalid Entity Profile values, values that are not valid for the applicable usage location, or values that are disallowed by local policy.\n```",
+              "createdAt": "2026-04-13T03:20:39Z",
+              "updatedAt": "2026-04-13T03:29:23Z"
+            },
+            {
+              "originalPosition": 116,
+              "body": "I'm fine with this for now, but \"catch all\" may get flagged in review as the processing and security considerations described in this draft are unknown for other JWT contexts. \n\n\n```suggestion\nThis specification defines two new Claim Names: `client_profile` and `sub_profile`. These Claims may appear in JWTs like JWT access tokens {{RFC9068}}, OpenID Connect ID tokens {{OIDC}}, and Transaction Tokens {{I-D.ietf-oauth-transaction-tokens}}, as well as in JWT authorization grant assertions {{RFC7523}} presented to the token endpoint. These Claims MAY also appear in other OAuth-related JWTs when their use is defined by the relevant specification or profile.\n```",
+              "createdAt": "2026-04-13T03:27:27Z",
+              "updatedAt": "2026-04-13T03:29:23Z"
             }
           ]
         }

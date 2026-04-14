@@ -192,7 +192,7 @@ For example, a token might include the Entity Profiles `ai_agent acme_verified_r
 
 # Entity Profile JWT Claims
 
-This specification defines two new Claim Names: `client_profile` and `sub_profile`. These Claims may appear in JWTs like JWT access tokens {{RFC9068}}, OpenID Connect ID tokens {{OIDC}}, and Transaction Tokens {{I-D.ietf-oauth-transaction-tokens}}, as well as in JWT authorization grant assertions {{RFC7523}} presented to the token endpoint. These Claims may be included in any other JWTs issued or used in OAuth flows.
+This specification defines two new Claim Names: `client_profile` and `sub_profile`. These Claims may appear in JWTs like JWT access tokens {{RFC9068}}, OpenID Connect ID tokens {{OIDC}}, and Transaction Tokens {{I-D.ietf-oauth-transaction-tokens}}, as well as in JWT authorization grant assertions {{RFC7523}} presented to the token endpoint. These Claims MAY also appear in other OAuth-related JWTs when their use is defined by the relevant specification or profile.
 
 ## `client_profile` Claim
 
@@ -410,7 +410,7 @@ If validation fails during:
 - **Client registration**: Authorization Servers SHOULD return `invalid_client_metadata` (as defined in {{RFC7591}}).
 - **Token issuance**: Servers MAY refuse to issue tokens or omit the invalid profile Claims.
 - **Token introspection**: Servers SHOULD ensure introspection results match stored profile metadata and MUST NOT fabricate or guess unknown profiles.
-- **JWT authorization grant processing**: Servers SHOULD return `invalid_grant` as defined in {{Section 3.1 of RFC7523}} if the assertion contains syntactically invalid or unrecognized Entity Profile values.
+- **JWT authorization grant processing**: Servers SHOULD return `invalid_grant` as defined in {{Section 3.1 of RFC7523}} if the assertion contains syntactically invalid Entity Profile values, values that are not valid for the applicable usage location, or values that are disallowed by local policy.
 - **Token exchange**: When processing inbound tokens or assertions (e.g., `subject_token` or `actor_token` in {{RFC8693}}), Authorization Servers SHOULD validate Entity Profile Claims in the presented tokens and MAY reject the exchange request if the values are invalid, unrecognized, or conflict with local policy.
 
 Clear, actionable error responses MUST be returned in accordance with OAuth and OpenID Connect error handling frameworks.

@@ -5,9 +5,9 @@
 Web Authorization Protocol                                    S. C. Mora
 Internet-Draft                                                 P. Dingle
 Intended status: Standards Track                   Microsoft Corporation
-Expires: 15 October 2026                                   K. McGuinness
+Expires: 16 October 2026                                   K. McGuinness
                                                              Independent
-                                                           13 April 2026
+                                                           14 April 2026
 
 
                        OAuth 2.0 Entity Profiles
@@ -59,7 +59,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 15 October 2026.
+   This Internet-Draft will expire on 16 October 2026.
 
 Copyright Notice
 
@@ -430,8 +430,8 @@ Table of Contents
    [RFC9068], OpenID Connect ID tokens [OIDC], and Transaction Tokens
    [I-D.ietf-oauth-transaction-tokens], as well as in JWT authorization
    grant assertions [RFC7523] presented to the token endpoint.  These
-   Claims may be included in any other JWTs issued or used in OAuth
-   flows.
+   Claims MAY also appear in other OAuth-related JWTs when their use is
+   defined by the relevant specification or profile.
 
 4.1.  client_profile Claim
 
@@ -825,8 +825,9 @@ Table of Contents
 
    *  *JWT authorization grant processing*: Servers SHOULD return
       invalid_grant as defined in Section 3.1 of [RFC7523] if the
-      assertion contains syntactically invalid or unrecognized Entity
-      Profile values.
+      assertion contains syntactically invalid Entity Profile values,
+      values that are not valid for the applicable usage location, or
+      values that are disallowed by local policy.
 
    *  *Token exchange*: When processing inbound tokens or assertions
       (e.g., subject_token or actor_token in [RFC8693]), Authorization

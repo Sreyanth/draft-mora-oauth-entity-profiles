@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-04-16T00:41:49.469804+00:00",
+  "timestamp": "2026-04-19T00:40:18.078160+00:00",
   "repo": "Sreyanth/draft-mora-oauth-entity-profiles",
   "labels": [
     {
@@ -49,7 +49,24 @@
       "color": "ffffff"
     }
   ],
-  "issues": [],
+  "issues": [
+    {
+      "number": 3,
+      "id": "I_kwDOQACHtc7_WmNE",
+      "title": "Tighten up the definition on `ai_agent`",
+      "url": "https://github.com/Sreyanth/draft-mora-oauth-entity-profiles/issues/3",
+      "state": "OPEN",
+      "author": "d4nt",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "The name and definition of `ai_agent` is a bit too vague. I think \"agent\" is a very overloaded term. And as the saying goes; everything is AI until it works. \n\n> an autonomous or semi-autonomous system capable of initiating actions and making decisions independently or on behalf of a user or organization\n\nI could argue that's true of a python script. I'd suggest the key differentiator here is whether the actor/system is non-deterministic or not. So I'd suggest a profile named just `ai` and defined as:\n\n```\n3.1.7 \"ai\"\n\nA system containing or that makes use of a probabilistic component, such as a Large Language Model (LLM), Neural Network, or other Machine Learning-derived decision-making process that is non-deterministic. These agents may participate in OAuth flows...\n```",
+      "createdAt": "2026-04-17T16:54:09Z",
+      "updatedAt": "2026-04-17T16:54:09Z",
+      "closedAt": null,
+      "comments": []
+    }
+  ],
   "pulls": [
     {
       "number": 1,

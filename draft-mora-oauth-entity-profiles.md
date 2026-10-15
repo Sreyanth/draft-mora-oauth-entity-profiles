@@ -359,9 +359,9 @@ The following is a non-normative example of how these parameters might appear in
 
 Clients implementing this specification:
 
-- MAY declare `client_profile` at registration when using OAuth Dynamic Client Registration
+- MAY declare `client_profile` at registration when using OAuth Dynamic Client Registration, or in their Client ID Metadata Document ([](#client-id-metadata-documents))
 - MUST use registered or private Entity Profiles
-- MUST NOT attempt to register with Entity Profiles that do not match their actual nature
+- MUST NOT declare Entity Profiles that do not match their actual nature, whether at registration or in a Client ID Metadata Document
 
 In environments where clients are manually registered or configured (e.g., enterprise deployments), `client_profile` provided MUST accurately represent the nature of the client. The value MUST be a registered Entity Profile or follow the naming conventions for private Entity Profiles.
 

@@ -259,7 +259,7 @@ Below is an example of how this metadata parameter might be included in the Auth
 
 # Client Metadata
 
-This specification defines the following client metadata parameter. A client can convey it in a Dynamic Client Registration request {{RFC7591}} ([](#dynamic-client-registration)) or in a Client ID Metadata Document {{I-D.ietf-oauth-client-id-metadata-document}}.
+This specification defines the following client metadata parameter. A client can convey it in a Dynamic Client Registration request {{RFC7591}} ([](#dynamic-client-registration)) or in a Client ID Metadata Document {{I-D.ietf-oauth-client-id-metadata-document}} ([](#client-id-metadata-documents)).
 
 "client_profile":
 : OPTIONAL. The Entity Profile of the client. This value MAY be included in the client's metadata and, if present, SHOULD match the client's actual Entity Profile. If omitted, the Authorization Server MAY assign a default Entity Profile based on its policies or the client's other metadata.
@@ -294,6 +294,24 @@ Below is an example of how the Authorization Server's registration response migh
   "client_profile": "service"
 }
 ~~~
+
+## Client ID Metadata Documents
+
+A client that uses a Client ID Metadata Document {{I-D.ietf-oauth-client-id-metadata-document}} MAY include `client_profile` in that document. The document contains client metadata values from the "OAuth Dynamic Client Registration Metadata" registry ({{Section 4 of I-D.ietf-oauth-client-id-metadata-document}}), so no additional parameter is needed. As with a registration request, the value is a declaration that the Authorization Server evaluates.
+
+An Authorization Server that supports Client ID Metadata Documents and implements this specification processes a declared `client_profile` value as follows:
+
+- If the declaration does not conform to the syntax in [](#representation-in-token-claims-and-metadata), or includes an Entity Profile that is neither registered for the "Client Profile" usage location nor a valid private Entity Profile, the Authorization Server MUST NOT apply the declaration.
+- If an Entity Profile in the declaration is valid but the Authorization Server does not recognize it or chooses not to apply it, the Authorization Server MAY omit that Entity Profile from the client's effective Entity Profile. An Entity Profile is not invalid merely because the Authorization Server does not recognize it.
+- If the declaration fails the Authorization Server's verification, the Authorization Server MUST NOT apply it.
+
+When a declaration is not applied, the Authorization Server determines the client's Entity Profile by its own policy, and token issuance follows [](#validation-requirements).
+
+Client ID Metadata Documents have no registration response, so no response reports the client's effective Entity Profile. An ID token may expose it when the Authorization Server includes the `client_profile` Claim, but clients cannot depend on that being available.
+
+A client can change its Client ID Metadata Document at any time, and the Authorization Server periodically re-fetches it ({{Section 5 of I-D.ietf-oauth-client-id-metadata-document}}). When a re-fetched document adds, changes, or removes `client_profile`, the Authorization Server MUST evaluate the change as it would an initial declaration before the change affects the effective Entity Profile used for subsequent token issuance. Removing a declared value does not by itself remove that Entity Profile from the client's effective Entity Profile. How the Authorization Server handles grants and tokens issued before the change is a matter of its policy; see {{Section 8.4 of I-D.ietf-oauth-client-id-metadata-document}}.
+
+When an Authorization Server pre-registers a Client Identifier URL ({{Section 7.2 of I-D.ietf-oauth-client-id-metadata-document}}), it can evaluate a declared `client_profile` at that time, as it would during manual registration.
 
 # Token Introspection Response Parameters
 
@@ -362,6 +380,8 @@ During client registration (dynamically or otherwise), Authorization Servers imp
 - MAY log Client Profile information for auditing and monitoring purposes.
 - MAY restrict clients from updating their `client_profile` after registration or limit the frequency of such updates, depending on their policies.
 
+For clients that use Client ID Metadata Documents, [](#client-id-metadata-documents) defines the corresponding processing, including changes to a declared `client_profile`.
+
 ## Subject Profile Assignment
 
 The Authorization Server MAY determine the `sub_profile` value based on:
@@ -415,6 +435,7 @@ Authorization Servers:
 If validation fails during:
 
 - **Client registration**: Authorization Servers SHOULD return `invalid_client_metadata` (as defined in {{RFC7591}}).
+- **Client ID Metadata Document processing**: See [](#client-id-metadata-documents).
 - **Token issuance**: Servers MAY refuse to issue tokens or omit the invalid profile Claims.
 - **Token introspection**: Servers SHOULD ensure introspection results match stored profile metadata and MUST NOT fabricate or guess unknown profiles.
 - **JWT authorization grant processing**: Servers SHOULD return `invalid_grant` as defined in {{Section 3.1 of RFC7523}} if the assertion contains syntactically invalid Entity Profile values, values that are not valid for the applicable usage location, or values that are disallowed by local policy.

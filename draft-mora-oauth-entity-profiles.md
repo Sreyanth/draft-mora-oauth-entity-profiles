@@ -307,7 +307,7 @@ An Authorization Server that supports Client ID Metadata Documents and implement
 
 When a declaration is not applied, the Authorization Server determines the client's Entity Profile by its own policy, and token issuance follows [](#validation-requirements).
 
-Client ID Metadata Documents have no registration response, so no response reports the client's effective Entity Profile. An ID token may expose it when the Authorization Server includes the `client_profile` Claim, but clients cannot depend on that being available.
+{{I-D.ietf-oauth-client-id-metadata-document}} defines no registration response that reports the client's effective Entity Profile. An ID token may expose it when the Authorization Server includes the `client_profile` Claim, but clients cannot depend on that being available.
 
 A client can change its Client ID Metadata Document at any time, and the Authorization Server periodically re-fetches it ({{Section 5 of I-D.ietf-oauth-client-id-metadata-document}}). When a re-fetched document adds, changes, or removes `client_profile`, the Authorization Server MUST evaluate the change as it would an initial declaration before the change affects the effective Entity Profile used for subsequent token issuance. Removing a declared value does not by itself remove that Entity Profile from the client's effective Entity Profile. How the Authorization Server handles grants and tokens issued before the change is a matter of its policy; see {{Section 8.4 of I-D.ietf-oauth-client-id-metadata-document}}.
 

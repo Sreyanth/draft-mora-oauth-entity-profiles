@@ -297,7 +297,7 @@ Below is an example of how the Authorization Server's registration response migh
 
 ## Client ID Metadata Documents
 
-A client that uses a Client ID Metadata Document {{I-D.ietf-oauth-client-id-metadata-document}} MAY include `client_profile` in that document. The document contains client metadata values from the "OAuth Dynamic Client Registration Metadata" registry ({{Section 4 of I-D.ietf-oauth-client-id-metadata-document}}), so no additional parameter is needed. As with a registration request, the value is a declaration that the Authorization Server evaluates.
+A client that uses a Client ID Metadata Document {{I-D.ietf-oauth-client-id-metadata-document}} MAY include `client_profile` in that document. The document contains client metadata values from the "OAuth Dynamic Client Registration Metadata" registry ({{Section 4 of I-D.ietf-oauth-client-id-metadata-document}}), so no additional parameter is needed. As with a registration request, the value is a declaration that the Authorization Server evaluates; [](#entity-profiles-in-client-id-metadata-documents) discusses what can support accepting it.
 
 An Authorization Server that supports Client ID Metadata Documents and implements this specification processes a declared `client_profile` value as follows:
 
@@ -555,9 +555,17 @@ Entity Profile Claims should only be trusted when issued by verified and trusted
 
 ## Entity Profile Spoofing
 
-Malicious clients may attempt to register or use false Entity Profiles to bypass access controls. To mitigate this, Authorization Servers should require verification for all profiles, especially privileged types like "ai_agent", and restrict dynamic registration of sensitive profiles unless additional validation is performed.
+Malicious clients may attempt to register or use false Entity Profiles to bypass access controls. To mitigate this, Authorization Servers should require verification for all profiles, especially privileged types like "ai_agent", and restrict dynamic registration and Client ID Metadata Document declarations of sensitive profiles unless additional validation is performed.
 
 Implementations are encouraged to monitor client behavior for consistency with the declared profile, applying penalties or revoking access when discrepancies indicate potential abuse or security risks.
+
+## Entity Profiles in Client ID Metadata Documents
+
+A Client ID Metadata Document is served from a URL under the client's control ({{Section 8.4 of I-D.ietf-oauth-client-id-metadata-document}}), so a `client_profile` value in it is self-asserted. Anyone who controls a domain can publish a document that declares any Entity Profile. Retrieving the document over HTTPS shows that it is served at the Client Identifier URL, and authenticating the client with a key published in the document shows possession of that key. Neither is evidence that the declared Entity Profile is accurate.
+
+Authorization Servers need a separate basis for accepting a declared Entity Profile. Trust in the client's operator, for example through a domain allowlist ({{Section 8.9 of I-D.ietf-oauth-client-id-metadata-document}}) or pre-registration of the Client Identifier URL ({{Section 7.2 of I-D.ietf-oauth-client-id-metadata-document}}), can provide that basis only where Authorization Server policy ties that trust to particular Entity Profiles. A `software_statement` {{RFC7591}} that carries `client_profile` can also contribute. {{Section 2 of RFC7591}} gives a value in a trusted software statement precedence over the same value in plain JSON metadata; that rule determines which declared value applies, not whether the Authorization Server accepts it. The Authorization Server also needs a basis for believing that the statement applies to this client, since trust in a statement delivered this way depends in part on the relationship between the client instance and the Client ID Metadata Document ({{Section 4.3 of I-D.ietf-oauth-client-id-metadata-document}}).
+
+Loss of control of the Client Identifier URL can allow an attacker to impersonate the client ({{Section 8.3 of I-D.ietf-oauth-client-id-metadata-document}}). Previously accepted Entity Profile assignments associated with that URL may therefore need reassessment.
 
 ## Entity Profiles in JWT Authorization Grant Assertions
 

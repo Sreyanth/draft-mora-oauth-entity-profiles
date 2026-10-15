@@ -801,6 +801,10 @@ The following non-normative examples illustrate how Entity Profiles might appear
 
 # Document History
 
+## draft-03
+
+- Added processing of `client_profile` in Client ID Metadata Documents, and restructured the client metadata section to cover Dynamic Client Registration and Client ID Metadata Documents
+
 ## draft-02
 
 - No changes
@@ -821,4 +825,4 @@ The following non-normative examples illustrate how Entity Profiles might appear
 # Acknowledgments
 {:numbered="false"}
 
-The authors would like to thank the following people for their contributions and reviews of this specification: Adrian Frei, Anna Barhudarian, Diana Smetters, Emily Lauber.
+The authors would like to thank the following people for their contributions and reviews of this specification: Adrian Frei, Anna Barhudarian, Diana Smetters, Emily Lauber, Jeff Lombardo.

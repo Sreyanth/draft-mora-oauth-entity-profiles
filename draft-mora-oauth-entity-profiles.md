@@ -303,7 +303,7 @@ An Authorization Server that supports Client ID Metadata Documents and implement
 
 - If the declaration does not conform to the syntax in [](#representation-in-token-claims-and-metadata), or includes an Entity Profile that is neither registered for the "Client Profile" usage location nor a valid private Entity Profile, the Authorization Server MUST NOT apply the declaration.
 - If an Entity Profile in the declaration is valid but the Authorization Server does not recognize it or chooses not to apply it, the Authorization Server MAY omit that Entity Profile from the client's effective Entity Profile. An Entity Profile is not invalid merely because the Authorization Server does not recognize it.
-- If the declaration fails the Authorization Server's verification, the Authorization Server MUST NOT apply it.
+- Before applying a declared Entity Profile, the Authorization Server MUST verify it according to its security policy. If verification fails, the Authorization Server MUST NOT apply that Entity Profile.
 
 When a declaration is not applied, the Authorization Server determines the client's Entity Profile by its own policy, and token issuance follows [](#validation-requirements).
 

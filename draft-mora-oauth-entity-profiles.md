@@ -60,12 +60,13 @@ normative:
     title: "Transaction Tokens"
     target: "https://datatracker.ietf.org/doc/html/draft-ietf-oauth-transaction-tokens"
     date: "March 2026"
+  I-D.ietf-oauth-client-id-metadata-document:
 informative:
   RFC8628:
 
 --- abstract
 
-This specification introduces Entity Profiles as a mechanism to categorize OAuth 2.0 entities—clients and subjects—based on their operational context. Entity Profiles provide structured descriptors for the client initiating the OAuth flow and the subject represented in tokens. This document defines new JWT Claim names and metadata parameters for use in JWTs issued or consumed in OAuth flows, including but not limited to access tokens, ID tokens, JWT authorization grant assertions, and transaction tokens, as well as in token introspection responses, dynamic client registration, and Authorization Server metadata. It also defines vocabulary for classifying acting entities within delegation chains.
+This specification introduces Entity Profiles as a mechanism to categorize OAuth 2.0 entities—clients and subjects—based on their operational context. Entity Profiles provide structured descriptors for the client initiating the OAuth flow and the subject represented in tokens. This document defines new JWT Claim names and metadata parameters for use in JWTs issued or consumed in OAuth flows, including but not limited to access tokens, ID tokens, JWT authorization grant assertions, and transaction tokens, as well as in token introspection responses, client metadata (including dynamic client registration and Client ID Metadata Documents), and Authorization Server metadata. It also defines vocabulary for classifying acting entities within delegation chains.
 
 --- middle
 
@@ -78,7 +79,7 @@ This specification introduces two new Claims:
 - `client_profile`: Describes the nature of the client software or application initiating the OAuth flow (e.g., web app, native app, AI agent).
 - `sub_profile`: Describes the entity represented by the subject (`sub`) Claim in an issued token (e.g., user, service, AI agent).
 
-This specification establishes a registry for OAuth Entity Profiles and defines an initial set of Entity Profile values. This document also defines how the Entity Profiles can be used in any JWT issued or consumed in OAuth flows, including but not limited to access tokens, ID tokens, JWT authorization grant assertions, and transaction tokens, as well as in token introspection responses, dynamic client registration, and Authorization Server metadata.
+This specification establishes a registry for OAuth Entity Profiles and defines an initial set of Entity Profile values. This document also defines how the Entity Profiles can be used in any JWT issued or consumed in OAuth flows, including but not limited to access tokens, ID tokens, JWT authorization grant assertions, and transaction tokens, as well as in token introspection responses, client metadata (including dynamic client registration and Client ID Metadata Documents), and Authorization Server metadata.
 
 This specification also defines the use of Entity Profiles in delegation scenarios through the `act` Claim {{RFC8693}}, introducing the concept of an Actor Profile to classify acting entities. By applying the same Entity Profile vocabulary to each actor in a delegation chain, this approach enables consistent classification of entities across both direct and delegated access contexts.
 
@@ -256,12 +257,18 @@ Below is an example of how this metadata parameter might be included in the Auth
 }
 ~~~
 
-# Dynamic Client Registration Metadata
+# Client Metadata
 
-If an Authorization Server supports Dynamic Client Registration as defined in {{RFC7591}} and also implements the mechanisms defined in this specification, it SHOULD allow clients to declare their Entity Profile using the following metadata parameter in their registration requests:
+This specification defines the following client metadata parameter. A client can convey it in a Dynamic Client Registration request {{RFC7591}} ([](#dynamic-client-registration)) or in a Client ID Metadata Document {{I-D.ietf-oauth-client-id-metadata-document}}.
 
 "client_profile":
-: OPTIONAL. The Entity Profile of the client. This value MAY be included in the client's registration request and, if present, SHOULD match the client's actual Entity Profile. If omitted, the Authorization Server MAY assign a default Entity Profile based on its policies or the client's other metadata.
+: OPTIONAL. The Entity Profile of the client. This value MAY be included in the client's metadata and, if present, SHOULD match the client's actual Entity Profile. If omitted, the Authorization Server MAY assign a default Entity Profile based on its policies or the client's other metadata.
+
+A `client_profile` value provided by a client is a declaration. The Authorization Server evaluates it under its policy and determines the client's effective Entity Profile, which is authoritative.
+
+## Dynamic Client Registration
+
+If an Authorization Server supports Dynamic Client Registration as defined in {{RFC7591}} and also implements the mechanisms defined in this specification, it SHOULD allow clients to declare their Entity Profile using the `client_profile` parameter in their registration requests.
 
 If the provided `client_profile` does not match the server's policy or fails the server's validation and verification checks, the Authorization Server MUST reject the registration request with an `invalid_client_metadata` error. The verification mechanisms for the `client_profile` value are out of scope for this specification, but it is recommended that Authorization Servers implement appropriate checks based on their security policies and operational context. They may also employ verification strategies like checking against known registries, validating against trusted sources, admin approval, metadata inference, out-of-band attestation by an accountable party etc.
 
@@ -721,7 +728,7 @@ IANA is requested to register the following field in the "OAuth Dynamic Client R
 - Client Metadata Name: "client_profile"
 - Client Metadata Description: Entity Profile information of the registering client
 - Change Controller: IESG
-- Specification Document: [](#dynamic-client-registration-metadata) of this document.
+- Specification Document: [](#client-metadata) of this document.
 
 ## Token Introspection Response Registration
 

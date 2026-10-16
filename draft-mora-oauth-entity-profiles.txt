@@ -5,9 +5,9 @@
 Web Authorization Protocol                                    S. C. Mora
 Internet-Draft                                                 P. Dingle
 Intended status: Standards Track                   Microsoft Corporation
-Expires: 17 October 2026                                   K. McGuinness
+Expires: 19 April 2027                                     K. McGuinness
                                                              Independent
-                                                           15 April 2026
+                                                         16 October 2026
 
 
                        OAuth 2.0 Entity Profiles
@@ -59,7 +59,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 17 October 2026.
+   This Internet-Draft will expire on 19 April 2027.
 
 Copyright Notice
 
@@ -150,8 +150,9 @@ Table of Contents
      15.2.  Informative References
    Appendix A.  Example Usage in Various Flows and Use Cases
    Appendix B.  Document History
-     B.1.  draft-01
-     B.2.  draft-00
+     B.1.  draft-02
+     B.2.  draft-01
+     B.3.  draft-00
    Acknowledgments
    Authors' Addresses
 
@@ -1612,7 +1613,11 @@ Appendix A.  Example Usage in Various Flows and Use Cases
 
 Appendix B.  Document History
 
-B.1.  draft-01
+B.1.  draft-02
+
+   *  No changes
+
+B.2.  draft-01
 
    *  Introduced Actor Profiles to classify acting entities in
       delegation contexts
@@ -1629,7 +1634,7 @@ B.1.  draft-01
 
    *  Editorial refinements to definitions and examples
 
-B.2.  draft-00
+B.3.  draft-00
 
    *  Initial draft
 

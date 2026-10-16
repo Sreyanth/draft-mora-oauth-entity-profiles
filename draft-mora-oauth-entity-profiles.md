@@ -765,6 +765,10 @@ The following non-normative examples illustrate how Entity Profiles might appear
 
 # Document History
 
+## draft-02
+
+- No changes
+
 ## draft-01
 
 - Introduced Actor Profiles to classify acting entities in delegation contexts
